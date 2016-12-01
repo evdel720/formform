@@ -1,0 +1,40 @@
+body {
+  display: flex;
+  flex-direction: row;
+}
+
+#board {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+}
+
+#board ul {
+  margin: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid black;
+  list-style: none;
+  height: 50px;
+}
+
+#board ul li {
+  width: 50px;
+  border: 1px solid blue;
+}
+
+li.filled {
+  background-color: green;
+}
+
+li.empty {
+  background-color: black;
+}
+
+.right {
+  width: 40%;
+}
+
+#pieces {
+}
