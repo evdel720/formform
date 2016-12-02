@@ -9,8 +9,15 @@ body {
   flex-direction: column;
 }
 
-#board ul {
-  margin: auto;
+.piece {
+  display: inline-flex;
+  flex-direction: column;
+  margin: 10px;
+  cursor: pointer;
+}
+
+#board ul, .piece ul {
+  margin: 0 auto;
   padding: 0;
   display: flex;
   flex-direction: row;
@@ -19,7 +26,7 @@ body {
   height: 50px;
 }
 
-#board ul li {
+#board ul li, .piece ul li {
   width: 50px;
   border: 1px solid blue;
 }
@@ -29,7 +36,7 @@ li.filled {
 }
 
 li.empty {
-  background-color: black;
+  border: 0px solid white;
 }
 
 .right {
@@ -37,4 +44,9 @@ li.empty {
 }
 
 #pieces {
+
+}
+
+.picked {
+  background-color: gold;
 }
