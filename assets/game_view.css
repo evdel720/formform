@@ -50,3 +50,7 @@ li.empty {
 .picked {
   background-color: gold;
 }
+
+.placed-piece {
+  display: none;
+}
