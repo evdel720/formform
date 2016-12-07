@@ -1,12 +1,14 @@
 body {
   display: flex;
   flex-direction: row;
+  height: 100vh;
 }
 
 #board {
   width: 60%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .piece {
@@ -21,7 +23,6 @@ body {
   padding: 0;
   display: flex;
   flex-direction: row;
-  border: 1px solid black;
   list-style: none;
   height: 50px;
 }
@@ -29,28 +30,60 @@ body {
 #board ul li, .piece ul li {
   width: 50px;
   border: 1px solid blue;
+  border-radius: 5px;
 }
 
 li.filled {
   background-color: green;
 }
 
-li.empty {
-  border: 0px solid white;
-}
-
 .right {
   width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.btns, .timer {
+  height: 5vh;
 }
 
 #pieces {
-
+  height: 90vh;
 }
 
 .picked {
-  background-color: gold;
+  box-shadow: 5px 5px 5px gold,
+             -5px -5px 5px gold,
+             -5px 5px 5px gold,
+             5px -5px 5px gold;
 }
 
 .placed-piece {
   display: none;
+}
+
+button {
+  color: #fff;
+  background-color: #6496c8;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 5px #27496d;
+  cursor: pointer;
+  padding: 3px 10px;
+  margin-top: 15px;
+}
+
+button:hover {
+  background-color: #417cb8
+}
+
+button:active {
+  background-color: #417cb8;
+  box-shadow: 0 5px #27496d;
+  transform: translateY(5px);
+}
+
+button:focus {
+  outline: none;
 }
