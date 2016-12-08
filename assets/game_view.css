@@ -43,12 +43,12 @@ body {
 
 #board ul li, .piece ul li {
   width: 50px;
-  border: 1px solid blue;
+  border: 1.5px solid #000;
   border-radius: 5px;
 }
 
 li.filled {
-  background-color: green;
+  background-color: #006400;
 }
 
 .right {
