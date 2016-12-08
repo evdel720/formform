@@ -4,6 +4,20 @@ body {
   height: 100vh;
 }
 
+#levels {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  justify-content: center;
+}
+
+#levels * {
+  margin: 5px;
+  cursor: pointer;
+  padding: 10px;
+}
+
 #board {
   width: 60%;
   display: flex;
@@ -86,4 +100,9 @@ button:active {
 
 button:focus {
   outline: none;
+}
+
+.selected-level {
+  background: gold;
+  border-radius: 10px;
 }
