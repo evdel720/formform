@@ -1,0 +1,6 @@
+Make sound effect files shorter
+Design better(with better color theme)
+Support multi player mode with Web Socket
+Make better board(with different algorithm)
+Refactor code
+Faster loading time!

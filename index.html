@@ -9,6 +9,10 @@
     <script type="text/javascript" src="./lib/bundle.js"></script>
   </head>
   <body>
+    <audio id="place-sound" src="https://res.cloudinary.com/wkdal720/video/upload/v1481317993/drop_seizbw.mp3"></audio>
+    <audio id="move-sound" src="https://res.cloudinary.com/wkdal720/video/upload/v1481317993/move_eiobai.mp3"></audio>
+    <audio id="pickup-sound" src="https://res.cloudinary.com/wkdal720/video/upload/v1481317993/pickup_uqaat7.mp3"></audio>
+
     <ul id="levels">
       <li class="selected-level">Easy</li>
       <li>Medium</li>
@@ -24,10 +28,12 @@
       <h3 id="timer"></h3>
       <div id="pieces"></div>
     </div>
-    <ol id="instruction">How to play
-      <li>Click a piece you want to rotate/flip.</li>
-      <li>Rotate/Flip with buttons</li>
-      <li>Drag any piece to the board to fill all green cells!</li>
+    <ol id="instruction">
+      How to play
+      <li>Click piece to rotate/flip.</li>
+      <li>Drag piece to the board to fill all green cells.</li>
+      <li>Click piece on the board to remove from board.</li>
+      <li>Click multi player button to play with others.</li>
     </ol>
   </body>
 </html>
