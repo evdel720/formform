@@ -75,10 +75,6 @@ li.filled {
              5px -5px 5px gold;
 }
 
-.placed-piece {
-  display: none;
-}
-
 button {
   color: #fff;
   background-color: #6496c8;
@@ -129,4 +125,8 @@ button:focus {
 #instruction > li {
   font-size: 25px;
   font-weight: bold;
+}
+
+.hidden {
+  display: none !important;
 }
