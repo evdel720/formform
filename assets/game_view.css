@@ -3,15 +3,29 @@ body {
   flex-direction: row;
   height: 100vh;
   font-family: 'Indie Flower', cursive;
+  font-size: 20px;
   font-weight: bold;
+  background: rgb(169, 109, 73);
+  color: rgb(52, 30, 18);
+}
+
+.ui {
+  width: 500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 #levels {
-  position: absolute;
   display: flex;
   flex-direction: row;
-  width: 60%;
-  justify-content: center;
+  background: rgb(204, 126, 83);
+  border-radius: 10px;
+  border: 10px ridge rgb(136, 79, 49);
+  box-sizing: border-box;
+  margin-top: 30px;
+  height: 75px;
 }
 
 #levels * {
@@ -20,11 +34,24 @@ body {
   padding: 10px;
 }
 
-#board {
+.left {
   width: 60%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+#board {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+  width: 500px;
+  height: 500px;
+  margin: auto;
+  background: rgb(253, 236, 206);
+  border-radius: 15px;
+  border: 10px ridge rgb(136, 79, 49);
+  box-sizing: border-box;
 }
 
 .piece {
@@ -60,8 +87,18 @@ li.filled {
   justify-content: space-around;
 }
 
-.btns, .timer {
-  height: 5vh;
+#timer::before {
+  content: '⌛';
+}
+
+#timer {
+  margin-top: 30px;
+  font-size: 30px;
+  height: 75px;
+  width: 250px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 #pieces {
@@ -76,23 +113,23 @@ li.filled {
 }
 
 button {
-  color: #fff;
-  background-color: #6496c8;
-  border: none;
+  color: rgb(52, 30, 18);
+  background-color: rgb(246, 194, 59);
+  border: 5px outset rgb(136, 79, 49);
   border-radius: 5px;
-  box-shadow: 0 5px #27496d;
   cursor: pointer;
   padding: 3px 10px;
   margin-top: 15px;
+  box-sizing: border-box;
 }
 
 button:hover {
-  background-color: #417cb8
+  background-color: rgb(228, 179, 50);
 }
 
 button:active {
-  background-color: #417cb8;
-  box-shadow: 0 5px #27496d;
+  border: 5px inset rgb(136, 79, 49);
+  background-color: rgb(208, 166, 53);
   transform: translateY(5px);
 }
 
@@ -101,16 +138,8 @@ button:focus {
 }
 
 .selected-level {
-  background: gold;
+  background: rgb(228, 179, 50);
   border-radius: 10px;
-}
-
-#timer {
-  font-size: 30px;
-  width: 100px;
-  position: fixed;
-  top: 20px;
-  left: 50%;
 }
 
 #instruction {
@@ -120,8 +149,10 @@ button:focus {
   list-style: circle;
   top: 30vh;
   right: 10vw;
-  background: #FFF;
-  padding-left: 30px;
+  background: rgba(255, 255, 255, 0.3);;
+  padding: 20px;
+  border-radius: 10px;
+  padding-left: 50px;
 }
 
 #instruction > li {
@@ -131,4 +162,22 @@ button:focus {
 
 .hidden {
   display: none !important;
+}
+
+
+#play {
+  height: 50px;
+  width: 100px;
+  font-size: 25px;
+}
+
+.btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.btns > * {
+  margin: 30px;
+  width: 100px;
 }

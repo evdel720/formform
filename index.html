@@ -12,28 +12,32 @@
     <audio id="place-sound" src="https://res.cloudinary.com/wkdal720/video/upload/v1481397129/drop_1_qooorz.mp3"></audio>
     <audio id="move-sound" src="https://res.cloudinary.com/wkdal720/video/upload/v1481317993/move_eiobai.mp3"></audio>
 
-    <ul id="levels">
-      <li class="selected-level">Easy</li>
-      <li>Medium</li>
-      <li>Hard</li>
-    </ul>
-    <div id="board">
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
-      <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+    <div class='left'>
+      <div class="ui">
+        <ul id="levels">
+          <li class="selected-level">Easy</li>
+          <li>Medium</li>
+          <li>Hard</li>
+        </ul>
+        <h3 id="timer" class="hidden"></h3>
+        <button id="play">Play</button>
+      </div>
+      <div id="board">
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        <ul class="dropzone"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+      </div>
     </div>
     <div class="right">
       <div class="btns">
-        <button id="play">Play</button>
         <button id="rotate" class="hidden">Rotate</button>
         <button id="flip" class="hidden">Flip</button>
       </div>
-      <h3 id="timer"></h3>
       <div id="pieces"></div>
     </div>
     <ol id="instruction">
@@ -42,7 +46,6 @@
       <li>Fill all the green cells!</li>
       <li>Click piece to rotate/flip.</li>
       <li>Click placed piece to remove.</li>
-      <li>Click multi player button to play with others.</li>
     </ol>
   </body>
 </html>

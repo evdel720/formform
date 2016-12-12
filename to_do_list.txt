@@ -1,4 +1,4 @@
-
+Add Dice
 Design better(with better color theme)
 Support multi player mode with Web Socket
 Faster loading time!
