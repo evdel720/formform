@@ -2,7 +2,7 @@ body {
   display: flex;
   flex-direction: row;
   height: 100vh;
-  font-family: 'Indie Flower', cursive;
+  font-family: 'Mirza', cursive;
   font-size: 20px;
   font-weight: bold;
   background: rgb(169, 109, 73);
@@ -170,6 +170,7 @@ button:focus {
   height: 50px;
   width: 100px;
   font-size: 25px;
+  padding-top: 6px;
 }
 
 .btns {
