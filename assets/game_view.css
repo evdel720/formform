@@ -115,11 +115,13 @@ button:focus {
 
 #instruction {
   position: absolute;
-  top: 30vh;
-  left: 20vw;
   font-size: 30px;
   font-weight: bolder;
   list-style: circle;
+  top: 30vh;
+  right: 10vw;
+  background: #FFF;
+  padding-left: 30px;
 }
 
 #instruction > li {
