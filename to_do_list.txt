@@ -1,5 +1,2 @@
-Add sound for winning/losing
-get rid of Dice stuff
 Support multi player mode with Web Socket
-Put quit button instead of play button when the game is playing
 Faster loading time!
