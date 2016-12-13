@@ -1,5 +1,5 @@
 {
-  "name": "untitled",
+  "name": "formform",
   "version": "1.0.0",
   "description": "",
   "main": "webpack.config.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evdel720/untitled.git"
+    "url": "git+https://github.com/evdel720/formform.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/evdel720/untitled/issues"
+    "url": "https://github.com/evdel720/formform/issues"
   },
-  "homepage": "https://github.com/evdel720/untitled#readme",
+  "homepage": "https://github.com/evdel720/formform#readme",
   "dependencies": {
     "babel-core": "^6.13.2",
     "babel-loader": "^6.2.4",
