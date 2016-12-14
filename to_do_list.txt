@@ -1,2 +1,2 @@
-Support multi player mode with Web Socket
+Weekly leader board
 Faster loading time!

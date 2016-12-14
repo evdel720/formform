@@ -5,34 +5,28 @@
   FormForm is a browser based puzzle game. It is implemented with JavaScript(ES6), HTML and CSS using webpack and babel.
 
 ## Background
-  I wanted to build a fun and educational game that can help developing geographical sense. With FormForm, user can think various ways to make a certain board with given pieces. I love the idea of generating random board and giving the freedom to make the board with given pieces.
+  I wanted to build a fun and educational game that can help developing a geometrical sense. With FormForm, the user can think about various ways to make a certain board with given pieces. I love the idea of generating a random board and giving the user freedom to make the board with given pieces.
   ![formform_gif](https://res.cloudinary.com/wkdal720/image/upload/v1481661014/imageedit__4466087888_nqlmek.gif)
 
 ## How to play
-  First, set proper level for you. Then click Play button. That generates the green board on the left and pieces on the right.
-  Second, drag pieces to where you want to place the piece on the board. The goal is fill all the green cells on the board with all the pieces.
+  First, set proper difficulty level for you. Then click the Play button. That generates the green board on the left and pieces on the right.
+  Second, drag pieces to where you want to place the piece on the board. The goal is fill all the green cells on the board by using all the pieces.
   Third, you can rotate/flip your piece when you select one.
-  Fourth, you can take a piece off from the board by clicking.
+  Fourth, you can take a piece off the board by clicking.
   Fifth, enjoy!
 
 ## Features & Implementation
 
 ### Setup Piece Object
-  I pre-populated the pieces as objects in /lib/piece_array.js with all the possible rotations. Each piece object has all the rotations as array and possible indexes like below.
-  ```javascript
-    piece = {
-      possibleIndexes: [0],
-      piecesArr: []
-    }
-  ```
+  I pre-populated the pieces as objects in /lib/piece_array.js with all the possible rotations. Each piece object has all the rotations as an array and possible indexes.
   possibleIndexes are for avoiding duplicated calculation when the app tries to generate a random board.
-  I pre-populated the pieces to optimize the running time. Once a user loaded the piece_array.js in client side, no matter how many times they play, it never actually rotate the piece or flip the piece. It uses the already made pieces and simply moves the index of the piece according to the action.
+  I pre-populated the pieces to optimize the running time. Once a user loads the piece_array.js on the client side, no matter how many times they play, it never actually rotates or flips the piece. It uses the already made pieces and simply moves the index of the piece according to the action.
 
 ### Generate random board
-  When user click play, the game object will generate a new board object with randomly picked pieces. In generating process, first shuffle the pieces(because order of the placing matters). Then pick one piece from pieces, take its rotated version randomly, and place it on the board. After that, go through the shuffled pieces and place each one on the board.
-  When placing one piece, the app uses the possibleIndexes in the piece object to reduce duplicated calculation. Since the possibleIndexes only has the unique piece grids. (Some pieces has all unique rotations but for example, [[1, 1], [1, 1]] will be same in any cases)
-  Basic idea of placing a piece is go through all the possible positions with possible shape and (hypothetically) put the piece on the board to see if the pieces already on the board and the new piece share the longest border between them. Since it has limited board size(8*8), for the worst case to place a piece on the board, it calculate (8 - piece.width) * (8 - piece.height) * (possibleIndexes.length) times.
-  I didn't actually put the piece on the board if we didn't finish the calculations by using this code below to check sharing border.
+  When the user clicks play, the game object will generate a new board object with randomly picked pieces. In the generating process, it first shuffles the pieces (because the placement order matters). Then, it picks one piece from pieces, take its rotated version randomly, and places it on the board. After that, it goes through the shuffled pieces and places each one on the board.
+  When placing one piece, the app uses the possibleIndexes in the piece object to reduce duplicated calculation, since the possibleIndexes only has the unique piece grids. (Some pieces have all unique rotations but for example, [[1, 1], [1, 1]] will be the same in every case)
+  The basic idea of placing a piece is to go through all the possible positions with possible shapes and (hypothetically) put the piece on the board to see if the pieces already on the board and the new piece share the longest border between them. Since it has limited board size(8*8), for the worst case to place a piece on the board, it calculates (8 - piece.width) * (8 - piece.height) * (possibleIndexes.length) times.
+  It doesn't actually put the piece on the board if it didn't finish the calculations, using this code below to check sharing border.
 
   ```javascript
     sharedBorder(pos, board, piece) {
@@ -53,12 +47,15 @@
     }
   ```
 ### Drag and Drop UI
-  The pieces are draggable html elements. I gave the board's children dropzone class to check if the piece dropped in the right place. I kept the drop event handling and lots of other things in the utils.js to keep the game_view.js short.
+  The pieces are draggable html elements. I gave the board's children the dropzone class to check if the piece was dropped in the right place. I kept the drop event handling and lots of other things in the utils.js to keep the game_view.js short.
 
 ## Future Directions for the Project
 
-### Multiplayer mode
-  Use WebSocket to generate multi player mode
+### Multi player mode
+  Implement multi player mode using WebSocket
+
+### Leader Board
+  Implement weekly leader board
 
 ### Mobile app development
   Implement the app with Swift
