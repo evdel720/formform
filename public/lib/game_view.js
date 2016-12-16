@@ -1,7 +1,8 @@
 import Game from './game.js';
 import Timer from './timer.js';
 import { setLevelHandler, getGridNode, findLoc,
-  disableInteraction, dropHandler } from './utils.js';
+  disableInteraction, dropHandler,
+  setUpMultiMode } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   let board = document.getElementById('board');
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let levels = document.getElementById('levels');
   let moveSound = document.getElementById('move-sound');
   let instruction = document.getElementById('instruction');
+  let multi = document.getElementById('multi');
   let boardNode = getGridNode(board);
 
   let game = new Game(boardNode, pieces);
@@ -20,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   Array.from(levels.children).forEach((li, idx) => {
     setLevelHandler(game, timer, li, idx);
   });
+
+  multi.addEventListener('click', setUpMultiMode);
 
   document.addEventListener('drop',
     (e) => dropHandler(game, boardNode, timer, e));

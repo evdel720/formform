@@ -7,7 +7,10 @@ app.use(express.static('public'));
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  
+
+  // setUpNewRoom
+  // setUpTwoPlayerGame
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });

@@ -82,6 +82,13 @@ const dropHandler = (game, boardNode, timer, e) => {
   }
 };
 
+const setUpMultiMode = () => {
+  // hide timer, levels
+  // change play button ready
+  // put other board right bottom
+  // put the room link as modal until someone comes in
+};
+
 
 export { setLevelHandler, getGridNode, findLoc,
-        disableInteraction, dropHandler };
+        disableInteraction, dropHandler, setUpMultiMode };
