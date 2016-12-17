@@ -56,6 +56,10 @@
 	
 	var _utils = __webpack_require__(6);
 	
+	var _solo_mode = __webpack_require__(7);
+	
+	var _solo_mode2 = _interopRequireDefault(_solo_mode);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	// start with setting up solo mode
@@ -63,62 +67,65 @@
 	// set up multi mode
 	// switch back when user click solo
 	
+	// solo: levels, game, timer,
+	// multi: don't know yet
+	
 	document.addEventListener('DOMContentLoaded', function () {
-	  var board = document.getElementById('board');
-	  var pieces = document.getElementById('pieces');
-	  var play = document.getElementById('play');
-	  var rotate = document.getElementById('rotate');
-	  var flip = document.getElementById('flip');
+	  var options = {
+	    board: document.getElementById('board'),
+	    pieces: document.getElementById('pieces'),
+	    main: document.getElementById('main'),
+	    rotate: document.getElementById('rotate'),
+	    flip: document.getElementById('flip'),
+	    instruction: document.getElementById('instruction'),
+	    mode: document.getElementById('mode')
+	  };
 	
-	  var levels = document.getElementById('levels');
-	  var moveSound = document.getElementById('move-sound');
-	  var instruction = document.getElementById('instruction');
-	  var multi = document.getElementById('multi');
-	  var boardNode = (0, _utils.getGridNode)(board);
-	
-	  var game = new _game2.default(boardNode, pieces);
-	  var timer = new _timer2.default(document.getElementById('timer'), _utils.disableInteraction);
-	
-	  Array.from(levels.children).forEach(function (li, idx) {
-	    (0, _utils.setLevelHandler)(game, timer, li, idx);
-	  });
-	
-	  multi.addEventListener('click', _utils.setUpMultiMode);
-	
-	  document.addEventListener('drop', function (e) {
-	    return (0, _utils.dropHandler)(game, boardNode, timer, e);
-	  });
-	
-	  play.addEventListener('click', function () {
-	    if (game.isPlaying) {
-	      game.clearBoard();
-	      timer.stop();
-	      (0, _utils.disableInteraction)(game);
-	    } else {
-	      play.innerText = "Quit";
-	      levels.classList.add("hidden");
-	      instruction.classList.add("hidden");
-	      timer.$timer.classList.remove("hidden");
-	      rotate.classList.remove("hidden");
-	      flip.classList.remove("hidden");
-	      timer.start(game);
-	      game.play();
-	    }
-	  });
-	
-	  document.addEventListener('dragover', function (e) {
-	    e.preventDefault();
-	  }, false);
-	
-	  [rotate, flip].forEach(function (btn) {
-	    btn.addEventListener('click', function (e) {
-	      e.preventDefault();
-	      if (game && game.pickedPiece) {
-	        moveSound.play();
-	        game.movePickedPiece(btn.id);
-	      }
-	    });
-	  });
+	  var gameMode = new _solo_mode2.default(options);
+	  // let levels = document.getElementById('levels');
+	  //
+	  // let game = new Game(boardNode, pieces);
+	  // let timer = new Timer(document.getElementById('timer'), disableInteraction);
+	  //
+	  // Array.from(levels.children).forEach((li, idx) => {
+	  //   setLevelHandler(game, timer, li, idx);
+	  // });
+	  //
+	  // multi.addEventListener('click', setUpMultiMode);
+	  //
+	  // document.addEventListener('drop',
+	  //   (e) => dropHandler(game, boardNode, timer, e));
+	  //
+	  // play.addEventListener('click', () => {
+	  //   if (game.isPlaying) {
+	  //     game.clearBoard();
+	  //     timer.stop();
+	  //     disableInteraction(game);
+	  //   } else {
+	  //     play.innerText = "Quit";
+	  //     levels.classList.add("hidden");
+	  //     instruction.classList.add("hidden");
+	  //     timer.$timer.classList.remove("hidden");
+	  //     rotate.classList.remove("hidden");
+	  //     flip.classList.remove("hidden");
+	  //     timer.start(game);
+	  //     game.play();
+	  //   }
+	  // });
+	  //
+	  // document.addEventListener('dragover', (e) => {
+	  //   e.preventDefault();
+	  // }, false);
+	  //
+	  // [rotate, flip].forEach((btn) => {
+	  //   btn.addEventListener('click', (e) => {
+	  //     e.preventDefault();
+	  //     if (game && game.pickedPiece) {
+	  //       moveSound.play();
+	  //       game.movePickedPiece(btn.id);
+	  //     }
+	  //   });
+	  // });
 	});
 
 /***/ },
@@ -567,6 +574,7 @@
 	    this.possibleIndexes = randomPiece.possibleIndexes;
 	    this.idx = 0;
 	    this.placed = false;
+	    this.sound = document.getElementById('move-sound');
 	  }
 	
 	  _createClass(Piece, [{
@@ -577,6 +585,7 @@
 	  }, {
 	    key: 'rotate',
 	    value: function rotate() {
+	      this.sound.play();
 	      if (this.idx < 4) {
 	        this.idx = (this.idx + 1) % 4;
 	      } else {
@@ -586,6 +595,7 @@
 	  }, {
 	    key: 'flip',
 	    value: function flip() {
+	      this.sound.play();
 	      this.idx = (this.idx + 4) % 8;
 	    }
 	  }]);
@@ -835,6 +845,129 @@
 	exports.disableInteraction = disableInteraction;
 	exports.dropHandler = dropHandler;
 	exports.setUpMultiMode = setUpMultiMode;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _html_helper = __webpack_require__(8);
+	
+	var _game = __webpack_require__(1);
+	
+	var _game2 = _interopRequireDefault(_game);
+	
+	var _timer = __webpack_require__(5);
+	
+	var _timer2 = _interopRequireDefault(_timer);
+	
+	var _utils = __webpack_require__(6);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var SoloMode = function () {
+	  function SoloMode() {
+	    _classCallCheck(this, SoloMode);
+	
+	    this.generateLevelsAndTimer();
+	  }
+	
+	  _createClass(SoloMode, [{
+	    key: 'generateLevelsAndTimer',
+	    value: function generateLevelsAndTimer() {
+	      var _this = this;
+	
+	      this.levels = (0, _html_helper.createElementWith)('ul', 'levels');
+	      ['Easy', 'Medium', 'Hard'].forEach(function (text, i) {
+	        var li = (0, _html_helper.createElementWith)('li', null, text);
+	        if (!i) {
+	          li.classList.add('selected-level');
+	        }
+	        _this.levels.appendChild(li);
+	      });
+	      var timer = (0, _html_helper.createElementWith)('h3', 'timer', null, ['hidden']);
+	      this.timer = new _timer2.default(timer, _utils.disableInteraction);
+	    }
+	  }]);
+	
+	  return SoloMode;
+	}();
+	
+	exports.default = SoloMode;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var addChildren = function addChildren(parent, children) {
+	  children.forEach(function (child) {
+	    parent.appendChild(child);
+	  });
+	};
+	
+	var createElementWith = function createElementWith(tag, id, text) {
+	  var classList = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
+	
+	  var el = document.createElement(tag);
+	  if (id) {
+	    el.id = id;
+	  }
+	  if (text) {
+	    el.innerText = text;
+	  }
+	  classList.forEach(function (c) {
+	    el.classList.add(c);
+	  });
+	  return el;
+	};
+	
+	var generateBoardDiv = function generateBoardDiv(ins) {
+	  var board = createElementWith('div', 'board');
+	  var boardNode = [];
+	  for (var i = 0; i < 8; i++) {
+	    var ul = createElementWith('ul', null, null, ['dropzone']);
+	    var temp = [];
+	    for (var j = 0; j < 8; j++) {
+	      var li = document.createElement('li');
+	      ul.appendChild(li);
+	      temp.push(li);
+	    }
+	    boardNode.push(temp);
+	    board.appendChild(ul);
+	  }
+	  ins.boardNode = boardNode;
+	  return board;
+	};
+	
+	var generateRightDiv = function generateRightDiv(ins) {
+	  var right = createElementWith('div', null, null, ['right']);
+	  var btns = createElementWith('div', null, null, ['btns']);
+	  ins.rotate = createElementWith('button', 'rotate', "Rotate", ['hidden']);
+	  ins.flip = createElementWith('button', 'flip', "Flip", ['hidden']);
+	  addChildren(btns, [ins.rotate, ins.flip]);
+	  ins.pieces = createElementWith('div', 'pieces');
+	  addChildren(right, [btns, ins.pieces]);
+	  return right;
+	};
+	
+	exports.addChildren = addChildren;
+	exports.createElementWith = createElementWith;
+	exports.generateBoardDiv = generateBoardDiv;
+	exports.generateRightDiv = generateRightDiv;
 
 /***/ }
 /******/ ]);

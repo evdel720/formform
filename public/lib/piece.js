@@ -9,6 +9,7 @@ class Piece {
     this.possibleIndexes = randomPiece.possibleIndexes;
     this.idx = 0;
     this.placed = false;
+    this.sound = document.getElementById('move-sound');
   }
 
   currentPiece() {
@@ -16,6 +17,7 @@ class Piece {
   }
 
   rotate() {
+    this.sound.play();
     if (this.idx < 4) {
       this.idx = (this.idx + 1) % 4;
     } else {
@@ -24,6 +26,7 @@ class Piece {
   }
 
   flip() {
+    this.sound.play();
     this.idx = (this.idx + 4) % 8;
   }
 }
