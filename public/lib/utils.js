@@ -1,3 +1,6 @@
+
+
+
 const setLevelHandler = (game, timer, li, idx) => {
   li.addEventListener('click', () => {
     if (!game.isPlaying) {
@@ -13,7 +16,6 @@ const getGridNode = (gridNode) => {
   return Array.from(gridNode.children).map((row) => Array.from(row.children));
 };
 
-
 const findLoc = (boardNode, cell) => {
   for (let i=0; i<boardNode.length; i++) {
     for (let j=0; j<boardNode[0].length; j++) {
@@ -25,7 +27,7 @@ const findLoc = (boardNode, cell) => {
 };
 
 const disableInteraction = (game, isWin) => {
-  let lostSound = document.getElementById('lost-sound');
+  const lostSound = document.getElementById('lost-sound');
   if (!isWin) {
     lostSound.play();
   }
@@ -33,7 +35,6 @@ const disableInteraction = (game, isWin) => {
   if (game.pickedPiece) {
     game.pickedPiece.classList.remove('picked');
   }
-  document.getElementById('play').innerText = "Play";
   document.getElementById('timer').classList.add('hidden');
   document.getElementById('rotate').classList.add('hidden');
   document.getElementById('flip').classList.add('hidden');
@@ -57,39 +58,61 @@ const disableInteraction = (game, isWin) => {
   });
 };
 
-const dropHandler = (game, boardNode, timer, e) => {
-  let placeSound = document.getElementById('place-sound');
-  let wonSound = document.getElementById('won-sound');
-  e.preventDefault();
-  if (e.target.parentNode.classList &&
-    e.target.parentNode.classList.contains("dropzone") &&
-      game && game.isPlaying && game.pickedCell) {
-    let currentPieceNode = game.pickedCell.parentNode.parentNode;
-    let currentPieceObject = game.pieceMap.get(currentPieceNode);
-    let bLoc = findLoc(boardNode, e.target);
-    let pLoc = findLoc(getGridNode(currentPieceNode), game.pickedCell);
-    let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
-    if (game.board.isValid(currentPieceObject, topLeft)) {
-      game.board.placePiece(currentPieceNode, topLeft);
-      if (game.board.isWon()) {
-        wonSound.play();
-        disableInteraction(game, true);
-        timer.stop();
-      } else {
-        placeSound.play();
-      }
+const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) => {
+  const placeSound = document.getElementById('place-sound');
+  const wonSound = document.getElementById('won-sound');
+  let bLoc = findLoc(boardNode, bCell);
+  let pLoc = findLoc(getGridNode(pieceNode), pCell);
+  let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
+  if (board.isValid(pieceObject, topLeft)) {
+    board.placePiece(pieceNode, topLeft);
+    if (board.isWon()) {
+      wonSound.play();
+      disableInteraction(gameMode.game, true);
+      gameMode.winHandler();
+    } else {
+      placeSound.play();
     }
   }
 };
 
-const setUpMultiMode = () => {
-  console.log("clicked battle");
-  // hide timer, levels
-  // change play button ready
-  // put other board right bottom
-  // put the room link as modal until someone comes in
+const dropHandler = (gameMode, e) => {
+  e.preventDefault();
+  let game = gameMode.game;
+  if (e.target.parentNode.classList &&
+      e.target.parentNode.classList.contains("dropzone") &&
+      game && game.isPlaying) {
+        gameMode.dropHandler(e.target);
+      }
 };
+
+//
+// const dropHandler = (game, boardNode, timer, e) => {
+//   const placeSound = document.getElementById('place-sound');
+//   const wonSound = document.getElementById('won-sound');
+//   e.preventDefault();
+//   if (e.target.parentNode.classList &&
+//     e.target.parentNode.classList.contains("dropzone") &&
+//       game && game.isPlaying && game.pickedCell) {
+//     let currentPieceNode = game.pickedCell.parentNode.parentNode;
+//     let currentPieceObject = game.pieceMap.get(currentPieceNode);
+//     let bLoc = findLoc(boardNode, e.target);
+//     let pLoc = findLoc(getGridNode(currentPieceNode), game.pickedCell);
+//     let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
+//     if (game.board.isValid(currentPieceObject, topLeft)) {
+//       game.board.placePiece(currentPieceNode, topLeft);
+//       if (game.board.isWon()) {
+//         wonSound.play();
+//         disableInteraction(game, true);
+//         timer.stop();
+//       } else {
+//         placeSound.play();
+//       }
+//     }
+//   }
+// };
 
 
 export { setLevelHandler, getGridNode, findLoc,
-        disableInteraction, dropHandler, setUpMultiMode };
+        disableInteraction, dropHandler,
+        placePieceOnBoard };
