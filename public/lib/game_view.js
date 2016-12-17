@@ -4,12 +4,18 @@ import { setLevelHandler, getGridNode, findLoc,
   disableInteraction, dropHandler,
   setUpMultiMode } from './utils.js';
 
+// start with setting up solo mode
+// if user clicks battle,
+// set up multi mode
+// switch back when user click solo
+
 document.addEventListener('DOMContentLoaded', () => {
   let board = document.getElementById('board');
   let pieces = document.getElementById('pieces');
   let play = document.getElementById('play');
   let rotate = document.getElementById('rotate');
   let flip = document.getElementById('flip');
+  
   let levels = document.getElementById('levels');
   let moveSound = document.getElementById('move-sound');
   let instruction = document.getElementById('instruction');

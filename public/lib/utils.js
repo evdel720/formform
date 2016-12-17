@@ -83,6 +83,7 @@ const dropHandler = (game, boardNode, timer, e) => {
 };
 
 const setUpMultiMode = () => {
+  console.log("clicked battle");
   // hide timer, levels
   // change play button ready
   // put other board right bottom

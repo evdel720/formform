@@ -2,9 +2,9 @@ const path = require('path');
 
 module.exports = {
   context: __dirname,
-  entry: "./lib/game_view.js",
+  entry: "./public/lib/game_view.js",
   output: {
-    path: "./lib",
+    path: "./public/lib",
     publicPath: "/lib/",
     filename: "bundle.js",
     devtoolModuleFilenameTemplate: '[resourcePath]',

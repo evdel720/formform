@@ -58,15 +58,22 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	// start with setting up solo mode
+	// if user clicks battle,
+	// set up multi mode
+	// switch back when user click solo
+	
 	document.addEventListener('DOMContentLoaded', function () {
 	  var board = document.getElementById('board');
 	  var pieces = document.getElementById('pieces');
 	  var play = document.getElementById('play');
 	  var rotate = document.getElementById('rotate');
 	  var flip = document.getElementById('flip');
+	
 	  var levels = document.getElementById('levels');
 	  var moveSound = document.getElementById('move-sound');
 	  var instruction = document.getElementById('instruction');
+	  var multi = document.getElementById('multi');
 	  var boardNode = (0, _utils.getGridNode)(board);
 	
 	  var game = new _game2.default(boardNode, pieces);
@@ -75,6 +82,8 @@
 	  Array.from(levels.children).forEach(function (li, idx) {
 	    (0, _utils.setLevelHandler)(game, timer, li, idx);
 	  });
+	
+	  multi.addEventListener('click', _utils.setUpMultiMode);
 	
 	  document.addEventListener('drop', function (e) {
 	    return (0, _utils.dropHandler)(game, boardNode, timer, e);
@@ -812,11 +821,20 @@
 	  }
 	};
 	
+	var setUpMultiMode = function setUpMultiMode() {
+	  console.log("clicked battle");
+	  // hide timer, levels
+	  // change play button ready
+	  // put other board right bottom
+	  // put the room link as modal until someone comes in
+	};
+	
 	exports.setLevelHandler = setLevelHandler;
 	exports.getGridNode = getGridNode;
 	exports.findLoc = findLoc;
 	exports.disableInteraction = disableInteraction;
 	exports.dropHandler = dropHandler;
+	exports.setUpMultiMode = setUpMultiMode;
 
 /***/ }
 /******/ ]);
