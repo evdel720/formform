@@ -27,9 +27,8 @@ const findLoc = (boardNode, cell) => {
 };
 
 const disableInteraction = (game, isWin, gameMode, mainText) => {
-  const lostSound = document.getElementById('lost-sound');
   if (!isWin) {
-    lostSound.play();
+    gameMode.options.lostSound.play();
   }
   gameMode.options.main.innerText = mainText;
   game.isPlaying = false;
@@ -60,7 +59,6 @@ const changeToGray = (query, isWin) => {
 };
 
 const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) => {
-  const placeSound = document.getElementById('place-sound');
   let bLoc = findLoc(boardNode, bCell);
   let pLoc = findLoc(getGridNode(pieceNode), pCell);
   let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
@@ -69,7 +67,7 @@ const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObjec
     if (board.isWon()) {
       return true;
     } else {
-      placeSound.play();
+      gameMode.options.placeSound.play();
     }
   }
 };

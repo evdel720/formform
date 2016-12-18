@@ -77,7 +77,9 @@
 	    levels: document.getElementById('levels'),
 	    main: document.getElementById('main'),
 	    mode: document.getElementById('mode'),
-	    wonSound: document.getElementById('won-sound')
+	    wonSound: document.getElementById('won-sound'),
+	    lostSound: document.getElementById('lost-sound'),
+	    placeSound: document.getElementById('place-sound')
 	  };
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
@@ -765,9 +767,8 @@
 	};
 	
 	var disableInteraction = function disableInteraction(game, isWin, gameMode, mainText) {
-	  var lostSound = document.getElementById('lost-sound');
 	  if (!isWin) {
-	    lostSound.play();
+	    gameMode.options.lostSound.play();
 	  }
 	  gameMode.options.main.innerText = mainText;
 	  game.isPlaying = false;
@@ -798,7 +799,6 @@
 	};
 	
 	var placePieceOnBoard = function placePieceOnBoard(pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) {
-	  var placeSound = document.getElementById('place-sound');
 	  var bLoc = findLoc(boardNode, bCell);
 	  var pLoc = findLoc(getGridNode(pieceNode), pCell);
 	  var topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
@@ -807,7 +807,7 @@
 	    if (board.isWon()) {
 	      return true;
 	    } else {
-	      placeSound.play();
+	      gameMode.options.placeSound.play();
 	    }
 	  }
 	};
