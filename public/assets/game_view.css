@@ -85,7 +85,6 @@ li.filled {
   width: 40%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
 }
 
 #timer::before {
@@ -100,10 +99,6 @@ li.filled {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-}
-
-#pieces {
-  height: 90vh;
 }
 
 .picked {
@@ -166,7 +161,7 @@ button:focus {
 }
 
 
-#play, #multi {
+#main, #mode {
   height: 50px;
   width: 100px;
   font-size: 25px;
@@ -177,6 +172,16 @@ button:focus {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  height: 105px;
+  align-items: center;
+}
+
+#rotate, #flip {
+  margin: 0;
+}
+
+#flip {
+  margin-left: 15px;
 }
 
 .btns > * {

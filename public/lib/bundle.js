@@ -66,14 +66,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	// start with setting up solo mode
-	// if user clicks battle,
-	// set up multi mode
-	// switch back when user click solo
-	
-	// solo: levels, game, timer,
-	// multi: don't know yet
-	
 	document.addEventListener('DOMContentLoaded', function () {
 	  var options = {
 	    board: document.getElementById('board'),
@@ -84,8 +76,10 @@
 	    timer: document.getElementById('timer'),
 	    levels: document.getElementById('levels'),
 	    main: document.getElementById('main'),
-	    mode: document.getElementById('mode')
+	    mode: document.getElementById('mode'),
+	    wonSound: document.getElementById('won-sound')
 	  };
+	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
 	
 	  var gameMode = new _solo_mode2.default(options);
@@ -664,7 +658,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Timer = function () {
-	  function Timer($timer, callback) {
+	  function Timer($timer, callback, gameMode) {
 	    _classCallCheck(this, Timer);
 	
 	    this.$timer = $timer;
@@ -673,6 +667,7 @@
 	    this.interval = undefined;
 	    this.timeout = undefined;
 	    this.callback = callback;
+	    this.gameMode = gameMode;
 	    this.renderTimer();
 	  }
 	
@@ -720,7 +715,7 @@
 	      }
 	      this.renderTimer();
 	      this.timeout = window.setTimeout(function () {
-	        return _this.callback(game);
+	        return _this.callback(game, false, _this.gameMode, 'Play');
 	      }, this.init * 1000);
 	      this.interval = window.setInterval(this.tick.bind(this), 1000);
 	    }
@@ -769,50 +764,48 @@
 	  }
 	};
 	
-	var disableInteraction = function disableInteraction(game, isWin) {
+	var disableInteraction = function disableInteraction(game, isWin, gameMode, mainText) {
 	  var lostSound = document.getElementById('lost-sound');
 	  if (!isWin) {
 	    lostSound.play();
 	  }
+	  gameMode.options.main.innerText = mainText;
 	  game.isPlaying = false;
 	  if (game.pickedPiece) {
 	    game.pickedPiece.classList.remove('picked');
 	  }
-	  document.getElementById('timer').classList.add('hidden');
+	
+	  changeToGray('#board li.filled', isWin);
+	  changeToGray('#pieces li.filled');
+	
 	  document.getElementById('rotate').classList.add('hidden');
 	  document.getElementById('flip').classList.add('hidden');
-	  document.getElementById('levels').classList.remove('hidden');
-	  document.querySelectorAll('#board li.filled').forEach(function (cell) {
-	    cell.style.cursor = "default";
-	    if (!isWin) {
-	      cell.style.backgroundColor = "#AAA";
-	    }
-	  });
-	
-	  document.querySelectorAll('#pieces li.filled').forEach(function (cell) {
-	    if (!isWin) {
-	      cell.style.backgroundColor = "#AAA";
-	    }
-	  });
 	
 	  document.querySelectorAll('#pieces > *').forEach(function (piece) {
 	    piece.style.cursor = "default";
 	    piece.setAttribute('draggable', false);
 	  });
+	  gameMode.disableUI();
+	};
+	
+	var changeToGray = function changeToGray(query, isWin) {
+	  document.querySelectorAll(query).forEach(function (cell) {
+	    if (!isWin) {
+	      cell.style.backgroundColor = "#AAA";
+	    }
+	    cell.style.cursor = "default";
+	  });
 	};
 	
 	var placePieceOnBoard = function placePieceOnBoard(pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) {
 	  var placeSound = document.getElementById('place-sound');
-	  var wonSound = document.getElementById('won-sound');
 	  var bLoc = findLoc(boardNode, bCell);
 	  var pLoc = findLoc(getGridNode(pieceNode), pCell);
 	  var topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
 	  if (board.isValid(pieceObject, topLeft)) {
 	    board.placePiece(pieceNode, topLeft);
 	    if (board.isWon()) {
-	      wonSound.play();
-	      disableInteraction(gameMode.game, true);
-	      gameMode.winHandler();
+	      return true;
 	    } else {
 	      placeSound.play();
 	    }
@@ -826,33 +819,6 @@
 	    gameMode.dropHandler(e.target);
 	  }
 	};
-	
-	//
-	// const dropHandler = (game, boardNode, timer, e) => {
-	//   const placeSound = document.getElementById('place-sound');
-	//   const wonSound = document.getElementById('won-sound');
-	//   e.preventDefault();
-	//   if (e.target.parentNode.classList &&
-	//     e.target.parentNode.classList.contains("dropzone") &&
-	//       game && game.isPlaying && game.pickedCell) {
-	//     let currentPieceNode = game.pickedCell.parentNode.parentNode;
-	//     let currentPieceObject = game.pieceMap.get(currentPieceNode);
-	//     let bLoc = findLoc(boardNode, e.target);
-	//     let pLoc = findLoc(getGridNode(currentPieceNode), game.pickedCell);
-	//     let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
-	//     if (game.board.isValid(currentPieceObject, topLeft)) {
-	//       game.board.placePiece(currentPieceNode, topLeft);
-	//       if (game.board.isWon()) {
-	//         wonSound.play();
-	//         disableInteraction(game, true);
-	//         timer.stop();
-	//       } else {
-	//         placeSound.play();
-	//       }
-	//     }
-	//   }
-	// };
-	
 	
 	exports.setLevelHandler = setLevelHandler;
 	exports.getGridNode = getGridNode;
@@ -904,7 +870,7 @@
 	
 	      var levels = this.options.levels;
 	      levels.classList.remove('hidden');
-	      this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction);
+	      this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
 	      Array.from(levels.children).forEach(function (li, idx) {
 	        (0, _utils.setLevelHandler)(_this.game, _this.timer, li, idx);
 	      });
@@ -913,10 +879,9 @@
 	    key: 'mainBtnHandler',
 	    value: function mainBtnHandler() {
 	      if (this.game.isPlaying) {
-	        this.options.main.innerText = 'Play';
 	        this.game.clearBoard();
 	        this.timer.stop();
-	        (0, _utils.disableInteraction)(this.game);
+	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
 	      } else {
 	        this.options.timer.classList.remove("hidden");
 	        this.options.levels.classList.add("hidden");
@@ -932,9 +897,17 @@
 	      }
 	    }
 	  }, {
-	    key: 'winHandler',
-	    value: function winHandler() {
+	    key: 'disableUI',
+	    value: function disableUI() {
+	      this.options.timer.classList.add('hidden');
+	      this.options.levels.classList.remove('hidden');
+	    }
+	  }, {
+	    key: 'wonHandler',
+	    value: function wonHandler() {
+	      this.options.wonSound.play();
 	      this.timer.stop();
+	      (0, _utils.disableInteraction)(this.game, true, this, 'Play');
 	    }
 	  }, {
 	    key: 'dropHandler',
@@ -944,7 +917,10 @@
 	      if (pCell) {
 	        var pieceNode = pCell.parentNode.parentNode;
 	        var pieceObject = game.pieceMap.get(pieceNode);
-	        (0, _utils.placePieceOnBoard)(pieceNode, pCell, this.options.boardNode, bCell, game.board, pieceObject, this);
+	        var won = (0, _utils.placePieceOnBoard)(pieceNode, pCell, this.options.boardNode, bCell, game.board, pieceObject, this);
+	        if (won) {
+	          this.wonHandler();
+	        }
 	      }
 	    }
 	  }]);
@@ -968,6 +944,11 @@
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	// idea: generate game with extra hard mode
+	// and get the same pieces
+	// instanciate two games with two board
+	// but same pieces with same shape (or not same shape but same pieces)
 	
 	var MultiMode = function () {
 	  function MultiMode(options) {

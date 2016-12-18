@@ -1,18 +1,9 @@
 import Game from './game.js';
 import Timer from './timer.js';
-import { setLevelHandler, getGridNode, findLoc,
-  disableInteraction, dropHandler } from './utils.js';
+import { getGridNode, dropHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
 import MultiMode from './multi_mode.js';
-
-// start with setting up solo mode
-// if user clicks battle,
-// set up multi mode
-// switch back when user click solo
-
-// solo: levels, game, timer,
-// multi: don't know yet
 
 document.addEventListener('DOMContentLoaded', () => {
   let options = {
@@ -24,8 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
     timer: document.getElementById('timer'),
     levels: document.getElementById('levels'),
     main: document.getElementById('main'),
-    mode: document.getElementById('mode')
+    mode: document.getElementById('mode'),
+    wonSound: document.getElementById('won-sound')
   };
+
   options.boardNode = getGridNode(options.board);
 
   let gameMode = new SoloMode(options);

@@ -26,50 +26,48 @@ const findLoc = (boardNode, cell) => {
   }
 };
 
-const disableInteraction = (game, isWin) => {
+const disableInteraction = (game, isWin, gameMode, mainText) => {
   const lostSound = document.getElementById('lost-sound');
   if (!isWin) {
     lostSound.play();
   }
+  gameMode.options.main.innerText = mainText;
   game.isPlaying = false;
   if (game.pickedPiece) {
     game.pickedPiece.classList.remove('picked');
   }
-  document.getElementById('timer').classList.add('hidden');
+
+  changeToGray('#board li.filled', isWin);
+  changeToGray('#pieces li.filled');
+
   document.getElementById('rotate').classList.add('hidden');
   document.getElementById('flip').classList.add('hidden');
-  document.getElementById('levels').classList.remove('hidden');
-  document.querySelectorAll('#board li.filled').forEach((cell) => {
-    cell.style.cursor = "default";
-    if (!isWin) {
-      cell.style.backgroundColor = "#AAA";
-    }
-  });
-
-  document.querySelectorAll('#pieces li.filled').forEach((cell) => {
-    if (!isWin) {
-      cell.style.backgroundColor = "#AAA";
-    }
-  });
 
   document.querySelectorAll('#pieces > *').forEach((piece) => {
     piece.style.cursor = "default";
     piece.setAttribute('draggable', false);
   });
+  gameMode.disableUI();
+};
+
+const changeToGray = (query, isWin) => {
+  document.querySelectorAll(query).forEach((cell) => {
+      if (!isWin) {
+        cell.style.backgroundColor = "#AAA";
+      }
+      cell.style.cursor = "default";
+  });
 };
 
 const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) => {
   const placeSound = document.getElementById('place-sound');
-  const wonSound = document.getElementById('won-sound');
   let bLoc = findLoc(boardNode, bCell);
   let pLoc = findLoc(getGridNode(pieceNode), pCell);
   let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
   if (board.isValid(pieceObject, topLeft)) {
     board.placePiece(pieceNode, topLeft);
     if (board.isWon()) {
-      wonSound.play();
-      disableInteraction(gameMode.game, true);
-      gameMode.winHandler();
+      return true;
     } else {
       placeSound.play();
     }
@@ -85,33 +83,6 @@ const dropHandler = (gameMode, e) => {
         gameMode.dropHandler(e.target);
       }
 };
-
-//
-// const dropHandler = (game, boardNode, timer, e) => {
-//   const placeSound = document.getElementById('place-sound');
-//   const wonSound = document.getElementById('won-sound');
-//   e.preventDefault();
-//   if (e.target.parentNode.classList &&
-//     e.target.parentNode.classList.contains("dropzone") &&
-//       game && game.isPlaying && game.pickedCell) {
-//     let currentPieceNode = game.pickedCell.parentNode.parentNode;
-//     let currentPieceObject = game.pieceMap.get(currentPieceNode);
-//     let bLoc = findLoc(boardNode, e.target);
-//     let pLoc = findLoc(getGridNode(currentPieceNode), game.pickedCell);
-//     let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
-//     if (game.board.isValid(currentPieceObject, topLeft)) {
-//       game.board.placePiece(currentPieceNode, topLeft);
-//       if (game.board.isWon()) {
-//         wonSound.play();
-//         disableInteraction(game, true);
-//         timer.stop();
-//       } else {
-//         placeSound.play();
-//       }
-//     }
-//   }
-// };
-
 
 export { setLevelHandler, getGridNode, findLoc,
         disableInteraction, dropHandler,
