@@ -1,6 +1,4 @@
 
-
-
 const setLevelHandler = (gameMode, li, idx) => {
   li.addEventListener('click', () => {
     if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
@@ -46,7 +44,7 @@ const disableInteraction = (game, isWin, gameMode, mainText) => {
     piece.style.cursor = "default";
     piece.setAttribute('draggable', false);
   });
-  gameMode.disableUI();
+  gameMode.resetUIShow();
 };
 
 const changeToGray = (query, isWin) => {

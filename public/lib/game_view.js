@@ -1,5 +1,3 @@
-import Game from './game.js';
-import Timer from './timer.js';
 import { getGridNode, dropHandler, setLevelHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
@@ -28,8 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let solo = new SoloMode(options);
 
   let gameMode = solo;
+  gameMode.enableUI();
   options.mode.addEventListener('click', () => {
     gameMode = gameMode.mode !== 'solo' ? solo : multi;
+    gameMode.enableUI();
   });
 
   options.main.addEventListener('click', () => {

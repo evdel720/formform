@@ -8,21 +8,14 @@ class SoloMode {
     this.mode = 'solo';
     this.options = options;
     this.game = new Game(options.boardNode, options.pieces);
-    this.enableUI();
+    this.timer = new Timer(this.options.timer, disableInteraction, this);
   }
 
   enableUI() {
-    // let levels = this.options.levels;
-    // levels.classList.remove('hidden');
     this.options.mode.innerText = "Battle";
     this.options.main.innerText = "Play";
     this.options.levels.classList.remove("hidden");
     this.options.roomSet.classList.add('hidden');
-
-    this.timer = new Timer(this.options.timer, disableInteraction, this);
-    // Array.from(levels.children).forEach((li, idx) => {
-    //   setLevelHandler(this.game, this.timer, li, idx);
-    // });
   }
 
   mainBtnHandler() {
@@ -45,7 +38,7 @@ class SoloMode {
     }
   }
 
-  disableUI() {
+  resetUIShow() {
     this.options.timer.classList.add('hidden');
     this.options.levels.classList.remove('hidden');
   }

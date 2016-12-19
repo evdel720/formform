@@ -11,7 +11,7 @@ class MultiMode {
     this.options = options;
     // this.game = new Game(options.boardNode, options.pieces);
     // this.game.pieceNum = 8;
-    this.enableUI();
+    // this.enableUI();
   }
 
   enableUI() {
@@ -20,6 +20,10 @@ class MultiMode {
     this.options.roomSet.classList.remove('hidden');
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
+  }
+
+  resetUIShow() {
+    
   }
 
   mainBtnHandler() {

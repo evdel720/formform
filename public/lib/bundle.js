@@ -46,14 +46,6 @@
 
 	'use strict';
 	
-	var _game = __webpack_require__(1);
-	
-	var _game2 = _interopRequireDefault(_game);
-	
-	var _timer = __webpack_require__(5);
-	
-	var _timer2 = _interopRequireDefault(_timer);
-	
 	var _utils = __webpack_require__(6);
 	
 	var _solo_mode = __webpack_require__(7);
@@ -89,8 +81,10 @@
 	  var solo = new _solo_mode2.default(options);
 	
 	  var gameMode = solo;
+	  gameMode.enableUI();
 	  options.mode.addEventListener('click', function () {
 	    gameMode = gameMode.mode !== 'solo' ? solo : multi;
+	    gameMode.enableUI();
 	  });
 	
 	  options.main.addEventListener('click', function () {
@@ -746,7 +740,6 @@
 	  value: true
 	});
 	
-	
 	var setLevelHandler = function setLevelHandler(gameMode, li, idx) {
 	  li.addEventListener('click', function () {
 	    if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
@@ -794,7 +787,7 @@
 	    piece.style.cursor = "default";
 	    piece.setAttribute('draggable', false);
 	  });
-	  gameMode.disableUI();
+	  gameMode.resetUIShow();
 	};
 	
 	var changeToGray = function changeToGray(query, isWin) {
@@ -868,23 +861,16 @@
 	    this.mode = 'solo';
 	    this.options = options;
 	    this.game = new _game2.default(options.boardNode, options.pieces);
-	    this.enableUI();
+	    this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
 	  }
 	
 	  _createClass(SoloMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
-	      // let levels = this.options.levels;
-	      // levels.classList.remove('hidden');
 	      this.options.mode.innerText = "Battle";
 	      this.options.main.innerText = "Play";
 	      this.options.levels.classList.remove("hidden");
 	      this.options.roomSet.classList.add('hidden');
-	
-	      this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
-	      // Array.from(levels.children).forEach((li, idx) => {
-	      //   setLevelHandler(this.game, this.timer, li, idx);
-	      // });
 	    }
 	  }, {
 	    key: 'mainBtnHandler',
@@ -909,8 +895,8 @@
 	      }
 	    }
 	  }, {
-	    key: 'disableUI',
-	    value: function disableUI() {
+	    key: 'resetUIShow',
+	    value: function resetUIShow() {
 	      this.options.timer.classList.add('hidden');
 	      this.options.levels.classList.remove('hidden');
 	    }
@@ -973,7 +959,7 @@
 	    this.options = options;
 	    // this.game = new Game(options.boardNode, options.pieces);
 	    // this.game.pieceNum = 8;
-	    this.enableUI();
+	    // this.enableUI();
 	  }
 	
 	  _createClass(MultiMode, [{
@@ -985,6 +971,9 @@
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
 	    }
+	  }, {
+	    key: 'resetUIShow',
+	    value: function resetUIShow() {}
 	  }, {
 	    key: 'mainBtnHandler',
 	    value: function mainBtnHandler() {}
