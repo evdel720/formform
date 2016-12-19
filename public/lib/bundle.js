@@ -938,10 +938,11 @@
 	  value: true
 	});
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // idea: generate game with extra hard mode
-	// and get the same pieces
-	// instanciate two games with two board
-	// but same pieces with same shape (or not same shape but same pieces)
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // idea: generate game with extra hard mode(8 pc)
+	// instanciate two players who has game object
+	// instanciate one game and copy the game to make the same one
+	// each player has game and board
+	// player class has the method to send signals to others
 	
 	var _game = __webpack_require__(1);
 	
@@ -959,7 +960,6 @@
 	    this.options = options;
 	    // this.game = new Game(options.boardNode, options.pieces);
 	    // this.game.pieceNum = 8;
-	    // this.enableUI();
 	  }
 	
 	  _createClass(MultiMode, [{

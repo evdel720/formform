@@ -1,7 +1,8 @@
-// idea: generate game with extra hard mode
-// and get the same pieces
-// instanciate two games with two board
-// but same pieces with same shape (or not same shape but same pieces)
+// idea: generate game with extra hard mode(8 pc)
+// instanciate two players who has game object
+// instanciate one game and copy the game to make the same one
+// each player has game and board
+// player class has the method to send signals to others
 
 import Game from './game.js';
 
@@ -11,7 +12,6 @@ class MultiMode {
     this.options = options;
     // this.game = new Game(options.boardNode, options.pieces);
     // this.game.pieceNum = 8;
-    // this.enableUI();
   }
 
   enableUI() {
@@ -23,7 +23,7 @@ class MultiMode {
   }
 
   resetUIShow() {
-    
+
   }
 
   mainBtnHandler() {
