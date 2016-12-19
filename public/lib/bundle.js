@@ -60,7 +60,7 @@
 	
 	var _solo_mode2 = _interopRequireDefault(_solo_mode);
 	
-	var _multi_mode = __webpack_require__(9);
+	var _multi_mode = __webpack_require__(8);
 	
 	var _multi_mode2 = _interopRequireDefault(_multi_mode);
 	
@@ -79,7 +79,8 @@
 	    mode: document.getElementById('mode'),
 	    wonSound: document.getElementById('won-sound'),
 	    lostSound: document.getElementById('lost-sound'),
-	    placeSound: document.getElementById('place-sound')
+	    placeSound: document.getElementById('place-sound'),
+	    roomSet: document.getElementById('room-set')
 	  };
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
@@ -778,9 +779,9 @@
 	
 	  changeToGray('#board li.filled', isWin);
 	  changeToGray('#pieces li.filled');
-	
-	  document.getElementById('rotate').classList.add('hidden');
-	  document.getElementById('flip').classList.add('hidden');
+	  gameMode.options.rotate.classList.add('hidden');
+	  gameMode.options.flip.classList.add('hidden');
+	  gameMode.options.mode.classList.remove('hidden');
 	
 	  document.querySelectorAll('#pieces > *').forEach(function (piece) {
 	    piece.style.cursor = "default";
@@ -870,6 +871,8 @@
 	
 	      var levels = this.options.levels;
 	      levels.classList.remove('hidden');
+	      this.options.main.innerText = "Play";
+	      this.options.roomSet.classList.add('hidden');
 	      this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
 	      Array.from(levels.children).forEach(function (li, idx) {
 	        (0, _utils.setLevelHandler)(_this.game, _this.timer, li, idx);
@@ -884,6 +887,7 @@
 	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
 	      } else {
 	        this.options.timer.classList.remove("hidden");
+	        this.options.mode.classList.add("hidden");
 	        this.options.levels.classList.add("hidden");
 	        this.timer.start(this.game);
 	        this.game.play();
@@ -931,9 +935,8 @@
 	exports.default = SoloMode;
 
 /***/ },
-/* 8 */,
-/* 9 */
-/***/ function(module, exports) {
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -941,14 +944,18 @@
 	  value: true
 	});
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	// idea: generate game with extra hard mode
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // idea: generate game with extra hard mode
 	// and get the same pieces
 	// instanciate two games with two board
 	// but same pieces with same shape (or not same shape but same pieces)
+	
+	var _game = __webpack_require__(1);
+	
+	var _game2 = _interopRequireDefault(_game);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var MultiMode = function () {
 	  function MultiMode(options) {
@@ -956,11 +963,16 @@
 	
 	    this.mode = 'multi';
 	    this.options = options;
+	    // this.game = new Game(options.boardNode, options.pieces);
+	    // this.game.pieceNum = 8;
+	    this.enableUI();
 	  }
 	
 	  _createClass(MultiMode, [{
 	    key: 'enableUI',
-	    value: function enableUI() {}
+	    value: function enableUI() {
+	      // this.options.timer
+	    }
 	  }, {
 	    key: 'mainBtnHandler',
 	    value: function mainBtnHandler() {}

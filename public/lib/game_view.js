@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mode: document.getElementById('mode'),
     wonSound: document.getElementById('won-sound'),
     lostSound: document.getElementById('lost-sound'),
-    placeSound: document.getElementById('place-sound')
+    placeSound: document.getElementById('place-sound'),
+    roomSet: document.getElementById('room-set')
   };
 
   options.boardNode = getGridNode(options.board);

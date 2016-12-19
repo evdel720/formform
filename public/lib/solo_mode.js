@@ -14,6 +14,8 @@ class SoloMode {
   enableUI() {
     let levels = this.options.levels;
     levels.classList.remove('hidden');
+    this.options.main.innerText = "Play";
+    this.options.roomSet.classList.add('hidden');
     this.timer = new Timer(this.options.timer, disableInteraction, this);
     Array.from(levels.children).forEach((li, idx) => {
       setLevelHandler(this.game, this.timer, li, idx);
@@ -27,6 +29,7 @@ class SoloMode {
       disableInteraction(this.game, false, this, 'Play');
     } else {
       this.options.timer.classList.remove("hidden");
+      this.options.mode.classList.add("hidden");
       this.options.levels.classList.add("hidden");
       this.timer.start(this.game);
       this.game.play();
