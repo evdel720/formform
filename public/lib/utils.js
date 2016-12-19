@@ -1,13 +1,13 @@
 
 
 
-const setLevelHandler = (game, timer, li, idx) => {
+const setLevelHandler = (gameMode, li, idx) => {
   li.addEventListener('click', () => {
-    if (!game.isPlaying) {
-      document.getElementsByClassName('selected-level')[0].classList.remove('selected-level');
+    if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
+      document.querySelector('li.selected-level').classList.remove('selected-level');
       li.classList.add('selected-level');
-      game.pieceNum = idx + 4;
-      timer.reset((idx + 1) * 60);
+      gameMode.game.pieceNum = idx + 4;
+      gameMode.timer.reset((idx + 1) * 60);
     }
   });
 };

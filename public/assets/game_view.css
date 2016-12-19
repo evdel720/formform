@@ -11,6 +11,7 @@ body {
 
 .ui {
   width: 500px;
+  height: 105px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

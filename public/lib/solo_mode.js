@@ -12,14 +12,17 @@ class SoloMode {
   }
 
   enableUI() {
-    let levels = this.options.levels;
-    levels.classList.remove('hidden');
+    // let levels = this.options.levels;
+    // levels.classList.remove('hidden');
+    this.options.mode.innerText = "Battle";
     this.options.main.innerText = "Play";
+    this.options.levels.classList.remove("hidden");
     this.options.roomSet.classList.add('hidden');
+
     this.timer = new Timer(this.options.timer, disableInteraction, this);
-    Array.from(levels.children).forEach((li, idx) => {
-      setLevelHandler(this.game, this.timer, li, idx);
-    });
+    // Array.from(levels.children).forEach((li, idx) => {
+    //   setLevelHandler(this.game, this.timer, li, idx);
+    // });
   }
 
   mainBtnHandler() {

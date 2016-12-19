@@ -1,6 +1,6 @@
 import Game from './game.js';
 import Timer from './timer.js';
-import { getGridNode, dropHandler } from './utils.js';
+import { getGridNode, dropHandler, setLevelHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
 import MultiMode from './multi_mode.js';
@@ -24,9 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   options.boardNode = getGridNode(options.board);
 
-  let gameMode = new SoloMode(options);
+  let multi = new MultiMode(options);
+  let solo = new SoloMode(options);
+
+  let gameMode = solo;
   options.mode.addEventListener('click', () => {
-    gameMode = gameMode.mode === 'solo' ? new SoloMode(options) : new MultiMode(options);
+    gameMode = gameMode.mode !== 'solo' ? solo : multi;
   });
 
   options.main.addEventListener('click', () => {
@@ -40,6 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
       options.flip.classList.remove("hidden");
     }
     gameMode.mainBtnHandler();
+  });
+
+  Array.from(options.levels.children).forEach((li, idx) => {
+    setLevelHandler(gameMode, li, idx);
   });
 
   document.addEventListener('drop', dropHandler.bind(null, gameMode));

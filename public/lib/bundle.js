@@ -85,9 +85,12 @@
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
 	
-	  var gameMode = new _solo_mode2.default(options);
+	  var multi = new _multi_mode2.default(options);
+	  var solo = new _solo_mode2.default(options);
+	
+	  var gameMode = solo;
 	  options.mode.addEventListener('click', function () {
-	    gameMode = gameMode.mode === 'solo' ? new _solo_mode2.default(options) : new _multi_mode2.default(options);
+	    gameMode = gameMode.mode !== 'solo' ? solo : multi;
 	  });
 	
 	  options.main.addEventListener('click', function () {
@@ -101,6 +104,10 @@
 	      options.flip.classList.remove("hidden");
 	    }
 	    gameMode.mainBtnHandler();
+	  });
+	
+	  Array.from(options.levels.children).forEach(function (li, idx) {
+	    (0, _utils.setLevelHandler)(gameMode, li, idx);
 	  });
 	
 	  document.addEventListener('drop', _utils.dropHandler.bind(null, gameMode));
@@ -740,13 +747,13 @@
 	});
 	
 	
-	var setLevelHandler = function setLevelHandler(game, timer, li, idx) {
+	var setLevelHandler = function setLevelHandler(gameMode, li, idx) {
 	  li.addEventListener('click', function () {
-	    if (!game.isPlaying) {
-	      document.getElementsByClassName('selected-level')[0].classList.remove('selected-level');
+	    if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
+	      document.querySelector('li.selected-level').classList.remove('selected-level');
 	      li.classList.add('selected-level');
-	      game.pieceNum = idx + 4;
-	      timer.reset((idx + 1) * 60);
+	      gameMode.game.pieceNum = idx + 4;
+	      gameMode.timer.reset((idx + 1) * 60);
 	    }
 	  });
 	};
@@ -867,16 +874,17 @@
 	  _createClass(SoloMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
-	      var _this = this;
-	
-	      var levels = this.options.levels;
-	      levels.classList.remove('hidden');
+	      // let levels = this.options.levels;
+	      // levels.classList.remove('hidden');
+	      this.options.mode.innerText = "Battle";
 	      this.options.main.innerText = "Play";
+	      this.options.levels.classList.remove("hidden");
 	      this.options.roomSet.classList.add('hidden');
+	
 	      this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
-	      Array.from(levels.children).forEach(function (li, idx) {
-	        (0, _utils.setLevelHandler)(_this.game, _this.timer, li, idx);
-	      });
+	      // Array.from(levels.children).forEach((li, idx) => {
+	      //   setLevelHandler(this.game, this.timer, li, idx);
+	      // });
 	    }
 	  }, {
 	    key: 'mainBtnHandler',
@@ -971,7 +979,11 @@
 	  _createClass(MultiMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
-	      // this.options.timer
+	      this.options.timer.classList.add('hidden');
+	      this.options.levels.classList.add('hidden');
+	      this.options.roomSet.classList.remove('hidden');
+	      this.options.main.innerText = "Ready";
+	      this.options.mode.innerText = "Solo";
 	    }
 	  }, {
 	    key: 'mainBtnHandler',

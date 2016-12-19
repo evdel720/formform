@@ -15,7 +15,11 @@ class MultiMode {
   }
 
   enableUI() {
-    // this.options.timer
+    this.options.timer.classList.add('hidden');
+    this.options.levels.classList.add('hidden');
+    this.options.roomSet.classList.remove('hidden');
+    this.options.main.innerText = "Ready";
+    this.options.mode.innerText = "Solo";
   }
 
   mainBtnHandler() {
