@@ -2,6 +2,7 @@ import { getGridNode, dropHandler, setLevelHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
 import MultiMode from './multi_mode.js';
+// check if the user is invited user (has the roomSet already)
 
 document.addEventListener('DOMContentLoaded', () => {
   let options = {
@@ -21,6 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   options.boardNode = getGridNode(options.board);
+  //
+  // let pageURL = decodeURIComponent(window.location.search.substring(1));
+  // let param = pageURL.split('=');
+  // let roomId;
+  // if (param[0] === 'room_id') {
+  //   roomId = param[1];
+  // }
 
   let multi = new MultiMode(options);
   let solo = new SoloMode(options);

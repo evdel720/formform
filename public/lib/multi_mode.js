@@ -5,6 +5,8 @@
 // player class has the method to send signals to others
 
 import Game from './game.js';
+/* global io */
+const socket = io();
 
 class MultiMode {
   constructor(options) {
@@ -20,6 +22,12 @@ class MultiMode {
     this.options.roomSet.classList.remove('hidden');
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
+    this.setUpNewRoom();
+  }
+
+  setUpNewRoom() {
+    // this only happens when the user generate new room
+    
   }
 
   resetUIShow() {

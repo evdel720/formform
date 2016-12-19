@@ -46,9 +46,9 @@
 
 	'use strict';
 	
-	var _utils = __webpack_require__(6);
+	var _utils = __webpack_require__(1);
 	
-	var _solo_mode = __webpack_require__(7);
+	var _solo_mode = __webpack_require__(2);
 	
 	var _solo_mode2 = _interopRequireDefault(_solo_mode);
 	
@@ -57,6 +57,8 @@
 	var _multi_mode2 = _interopRequireDefault(_multi_mode);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	// check if the user is invited user (has the roomSet already)
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	  var options = {
@@ -76,6 +78,13 @@
 	  };
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
+	  //
+	  // let pageURL = decodeURIComponent(window.location.search.substring(1));
+	  // let param = pageURL.split('=');
+	  // let roomId;
+	  // if (param[0] === 'room_id') {
+	  //   roomId = param[1];
+	  // }
 	
 	  var multi = new _multi_mode2.default(options);
 	  var solo = new _solo_mode2.default(options);
@@ -120,6 +129,104 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var setLevelHandler = function setLevelHandler(gameMode, li, idx) {
+	  li.addEventListener('click', function () {
+	    if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
+	      document.querySelector('li.selected-level').classList.remove('selected-level');
+	      li.classList.add('selected-level');
+	      gameMode.game.pieceNum = idx + 4;
+	      gameMode.timer.reset((idx + 1) * 60);
+	    }
+	  });
+	};
+	
+	var getGridNode = function getGridNode(gridNode) {
+	  return Array.from(gridNode.children).map(function (row) {
+	    return Array.from(row.children);
+	  });
+	};
+	
+	var findLoc = function findLoc(boardNode, cell) {
+	  for (var i = 0; i < boardNode.length; i++) {
+	    for (var j = 0; j < boardNode[0].length; j++) {
+	      if (boardNode[i][j] === cell) {
+	        return [i, j];
+	      }
+	    }
+	  }
+	};
+	
+	var disableInteraction = function disableInteraction(game, isWin, gameMode, mainText) {
+	  if (!isWin) {
+	    gameMode.options.lostSound.play();
+	  }
+	  gameMode.options.main.innerText = mainText;
+	  game.isPlaying = false;
+	  if (game.pickedPiece) {
+	    game.pickedPiece.classList.remove('picked');
+	  }
+	
+	  changeToGray('#board li.filled', isWin);
+	  changeToGray('#pieces li.filled');
+	  gameMode.options.rotate.classList.add('hidden');
+	  gameMode.options.flip.classList.add('hidden');
+	  gameMode.options.mode.classList.remove('hidden');
+	
+	  document.querySelectorAll('#pieces > *').forEach(function (piece) {
+	    piece.style.cursor = "default";
+	    piece.setAttribute('draggable', false);
+	  });
+	  gameMode.resetUIShow();
+	};
+	
+	var changeToGray = function changeToGray(query, isWin) {
+	  document.querySelectorAll(query).forEach(function (cell) {
+	    if (!isWin) {
+	      cell.style.backgroundColor = "#AAA";
+	    }
+	    cell.style.cursor = "default";
+	  });
+	};
+	
+	var placePieceOnBoard = function placePieceOnBoard(pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) {
+	  var bLoc = findLoc(boardNode, bCell);
+	  var pLoc = findLoc(getGridNode(pieceNode), pCell);
+	  var topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
+	  if (board.isValid(pieceObject, topLeft)) {
+	    board.placePiece(pieceNode, topLeft);
+	    if (board.isWon()) {
+	      return true;
+	    } else {
+	      gameMode.options.placeSound.play();
+	    }
+	  }
+	};
+	
+	var dropHandler = function dropHandler(gameMode, e) {
+	  e.preventDefault();
+	  var game = gameMode.game;
+	  if (e.target.parentNode.classList && e.target.parentNode.classList.contains("dropzone") && game && game.isPlaying) {
+	    gameMode.dropHandler(e.target);
+	  }
+	};
+	
+	exports.setLevelHandler = setLevelHandler;
+	exports.getGridNode = getGridNode;
+	exports.findLoc = findLoc;
+	exports.disableInteraction = disableInteraction;
+	exports.dropHandler = dropHandler;
+	exports.placePieceOnBoard = placePieceOnBoard;
+
+/***/ },
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -130,11 +237,111 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _board = __webpack_require__(2);
+	var _game = __webpack_require__(3);
+	
+	var _game2 = _interopRequireDefault(_game);
+	
+	var _timer = __webpack_require__(7);
+	
+	var _timer2 = _interopRequireDefault(_timer);
+	
+	var _utils = __webpack_require__(1);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var SoloMode = function () {
+	  function SoloMode(options) {
+	    _classCallCheck(this, SoloMode);
+	
+	    this.mode = 'solo';
+	    this.options = options;
+	    this.game = new _game2.default(options.boardNode, options.pieces);
+	    this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
+	  }
+	
+	  _createClass(SoloMode, [{
+	    key: 'enableUI',
+	    value: function enableUI() {
+	      this.options.mode.innerText = "Battle";
+	      this.options.main.innerText = "Play";
+	      this.options.levels.classList.remove("hidden");
+	      this.options.roomSet.classList.add('hidden');
+	    }
+	  }, {
+	    key: 'mainBtnHandler',
+	    value: function mainBtnHandler() {
+	      if (this.game.isPlaying) {
+	        this.game.clearBoard();
+	        this.timer.stop();
+	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
+	      } else {
+	        this.options.timer.classList.remove("hidden");
+	        this.options.mode.classList.add("hidden");
+	        this.options.levels.classList.add("hidden");
+	        this.timer.start(this.game);
+	        this.game.play();
+	      }
+	    }
+	  }, {
+	    key: 'movePiece',
+	    value: function movePiece(action) {
+	      if (this.game.pickedPiece) {
+	        this.game.movePickedPiece(action);
+	      }
+	    }
+	  }, {
+	    key: 'resetUIShow',
+	    value: function resetUIShow() {
+	      this.options.timer.classList.add('hidden');
+	      this.options.levels.classList.remove('hidden');
+	    }
+	  }, {
+	    key: 'wonHandler',
+	    value: function wonHandler() {
+	      this.options.wonSound.play();
+	      this.timer.stop();
+	      (0, _utils.disableInteraction)(this.game, true, this, 'Play');
+	    }
+	  }, {
+	    key: 'dropHandler',
+	    value: function dropHandler(bCell, placeSound, wonSound) {
+	      var game = this.game;
+	      var pCell = game.pickedCell;
+	      if (pCell) {
+	        var pieceNode = pCell.parentNode.parentNode;
+	        var pieceObject = game.pieceMap.get(pieceNode);
+	        var won = (0, _utils.placePieceOnBoard)(pieceNode, pCell, this.options.boardNode, bCell, game.board, pieceObject, this);
+	        if (won) {
+	          this.wonHandler();
+	        }
+	      }
+	    }
+	  }]);
+	
+	  return SoloMode;
+	}();
+	
+	exports.default = SoloMode;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _board = __webpack_require__(4);
 	
 	var _board2 = _interopRequireDefault(_board);
 	
-	var _piece = __webpack_require__(3);
+	var _piece = __webpack_require__(5);
 	
 	var _piece2 = _interopRequireDefault(_piece);
 	
@@ -288,7 +495,7 @@
 	exports.default = Game;
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -533,7 +740,7 @@
 	exports.default = Board;
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -544,7 +751,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _piece_array = __webpack_require__(4);
+	var _piece_array = __webpack_require__(6);
 	
 	var _piece_array2 = _interopRequireDefault(_piece_array);
 	
@@ -596,7 +803,7 @@
 	exports.default = Piece;
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -648,7 +855,7 @@
 	});
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -731,204 +938,6 @@
 	exports.default = Timer;
 
 /***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var setLevelHandler = function setLevelHandler(gameMode, li, idx) {
-	  li.addEventListener('click', function () {
-	    if (gameMode.mode === 'solo' && !gameMode.game.isPlaying) {
-	      document.querySelector('li.selected-level').classList.remove('selected-level');
-	      li.classList.add('selected-level');
-	      gameMode.game.pieceNum = idx + 4;
-	      gameMode.timer.reset((idx + 1) * 60);
-	    }
-	  });
-	};
-	
-	var getGridNode = function getGridNode(gridNode) {
-	  return Array.from(gridNode.children).map(function (row) {
-	    return Array.from(row.children);
-	  });
-	};
-	
-	var findLoc = function findLoc(boardNode, cell) {
-	  for (var i = 0; i < boardNode.length; i++) {
-	    for (var j = 0; j < boardNode[0].length; j++) {
-	      if (boardNode[i][j] === cell) {
-	        return [i, j];
-	      }
-	    }
-	  }
-	};
-	
-	var disableInteraction = function disableInteraction(game, isWin, gameMode, mainText) {
-	  if (!isWin) {
-	    gameMode.options.lostSound.play();
-	  }
-	  gameMode.options.main.innerText = mainText;
-	  game.isPlaying = false;
-	  if (game.pickedPiece) {
-	    game.pickedPiece.classList.remove('picked');
-	  }
-	
-	  changeToGray('#board li.filled', isWin);
-	  changeToGray('#pieces li.filled');
-	  gameMode.options.rotate.classList.add('hidden');
-	  gameMode.options.flip.classList.add('hidden');
-	  gameMode.options.mode.classList.remove('hidden');
-	
-	  document.querySelectorAll('#pieces > *').forEach(function (piece) {
-	    piece.style.cursor = "default";
-	    piece.setAttribute('draggable', false);
-	  });
-	  gameMode.resetUIShow();
-	};
-	
-	var changeToGray = function changeToGray(query, isWin) {
-	  document.querySelectorAll(query).forEach(function (cell) {
-	    if (!isWin) {
-	      cell.style.backgroundColor = "#AAA";
-	    }
-	    cell.style.cursor = "default";
-	  });
-	};
-	
-	var placePieceOnBoard = function placePieceOnBoard(pieceNode, pCell, boardNode, bCell, board, pieceObject, gameMode) {
-	  var bLoc = findLoc(boardNode, bCell);
-	  var pLoc = findLoc(getGridNode(pieceNode), pCell);
-	  var topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
-	  if (board.isValid(pieceObject, topLeft)) {
-	    board.placePiece(pieceNode, topLeft);
-	    if (board.isWon()) {
-	      return true;
-	    } else {
-	      gameMode.options.placeSound.play();
-	    }
-	  }
-	};
-	
-	var dropHandler = function dropHandler(gameMode, e) {
-	  e.preventDefault();
-	  var game = gameMode.game;
-	  if (e.target.parentNode.classList && e.target.parentNode.classList.contains("dropzone") && game && game.isPlaying) {
-	    gameMode.dropHandler(e.target);
-	  }
-	};
-	
-	exports.setLevelHandler = setLevelHandler;
-	exports.getGridNode = getGridNode;
-	exports.findLoc = findLoc;
-	exports.disableInteraction = disableInteraction;
-	exports.dropHandler = dropHandler;
-	exports.placePieceOnBoard = placePieceOnBoard;
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _game = __webpack_require__(1);
-	
-	var _game2 = _interopRequireDefault(_game);
-	
-	var _timer = __webpack_require__(5);
-	
-	var _timer2 = _interopRequireDefault(_timer);
-	
-	var _utils = __webpack_require__(6);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var SoloMode = function () {
-	  function SoloMode(options) {
-	    _classCallCheck(this, SoloMode);
-	
-	    this.mode = 'solo';
-	    this.options = options;
-	    this.game = new _game2.default(options.boardNode, options.pieces);
-	    this.timer = new _timer2.default(this.options.timer, _utils.disableInteraction, this);
-	  }
-	
-	  _createClass(SoloMode, [{
-	    key: 'enableUI',
-	    value: function enableUI() {
-	      this.options.mode.innerText = "Battle";
-	      this.options.main.innerText = "Play";
-	      this.options.levels.classList.remove("hidden");
-	      this.options.roomSet.classList.add('hidden');
-	    }
-	  }, {
-	    key: 'mainBtnHandler',
-	    value: function mainBtnHandler() {
-	      if (this.game.isPlaying) {
-	        this.game.clearBoard();
-	        this.timer.stop();
-	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
-	      } else {
-	        this.options.timer.classList.remove("hidden");
-	        this.options.mode.classList.add("hidden");
-	        this.options.levels.classList.add("hidden");
-	        this.timer.start(this.game);
-	        this.game.play();
-	      }
-	    }
-	  }, {
-	    key: 'movePiece',
-	    value: function movePiece(action) {
-	      if (this.game.pickedPiece) {
-	        this.game.movePickedPiece(action);
-	      }
-	    }
-	  }, {
-	    key: 'resetUIShow',
-	    value: function resetUIShow() {
-	      this.options.timer.classList.add('hidden');
-	      this.options.levels.classList.remove('hidden');
-	    }
-	  }, {
-	    key: 'wonHandler',
-	    value: function wonHandler() {
-	      this.options.wonSound.play();
-	      this.timer.stop();
-	      (0, _utils.disableInteraction)(this.game, true, this, 'Play');
-	    }
-	  }, {
-	    key: 'dropHandler',
-	    value: function dropHandler(bCell, placeSound, wonSound) {
-	      var game = this.game;
-	      var pCell = game.pickedCell;
-	      if (pCell) {
-	        var pieceNode = pCell.parentNode.parentNode;
-	        var pieceObject = game.pieceMap.get(pieceNode);
-	        var won = (0, _utils.placePieceOnBoard)(pieceNode, pCell, this.options.boardNode, bCell, game.board, pieceObject, this);
-	        if (won) {
-	          this.wonHandler();
-	        }
-	      }
-	    }
-	  }]);
-	
-	  return SoloMode;
-	}();
-	
-	exports.default = SoloMode;
-
-/***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -944,13 +953,16 @@
 	// each player has game and board
 	// player class has the method to send signals to others
 	
-	var _game = __webpack_require__(1);
+	var _game = __webpack_require__(3);
 	
 	var _game2 = _interopRequireDefault(_game);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/* global io */
+	var socket = io();
 	
 	var MultiMode = function () {
 	  function MultiMode(options) {
@@ -970,6 +982,13 @@
 	      this.options.roomSet.classList.remove('hidden');
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
+	      this.setUpNewRoom();
+	    }
+	  }, {
+	    key: 'setUpNewRoom',
+	    value: function setUpNewRoom() {
+	      // this only happens when the user generate new room
+	
 	    }
 	  }, {
 	    key: 'resetUIShow',
