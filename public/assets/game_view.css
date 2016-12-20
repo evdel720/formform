@@ -191,3 +191,16 @@ button:focus {
 #pieces {
   margin-right: 40px;
 }
+
+#copy {
+  margin: 0;
+  padding: 0 5px;
+  font-size: medium;
+  border: 0;
+  display: inline;
+  height: 20px;
+}
+
+#copy:active {
+  transform: none;
+}

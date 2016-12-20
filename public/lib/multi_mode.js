@@ -5,6 +5,7 @@
 // player class has the method to send signals to others
 
 import Game from './game.js';
+import crypto from 'crypto';
 /* global io */
 const socket = io();
 
@@ -27,7 +28,10 @@ class MultiMode {
 
   setUpNewRoom() {
     // this only happens when the user generate new room
-    
+    let roomId = crypto.randomBytes(5).toString('hex');
+    window.history.replaceState({}, '', roomId);
+    this.options.roomLink.value = window.location.href;
+    socket.emit('newRoom', roomId);
   }
 
   resetUIShow() {

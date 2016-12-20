@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     wonSound: document.getElementById('won-sound'),
     lostSound: document.getElementById('lost-sound'),
     placeSound: document.getElementById('place-sound'),
-    roomSet: document.getElementById('room-set')
+    roomSet: document.getElementById('room-set'),
+    roomLink: document.getElementById('room-link')
   };
 
   options.boardNode = getGridNode(options.board);
@@ -64,6 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       gameMode.movePiece(btn.id);
     });
+  });
+
+  document.getElementById('copy').addEventListener('click', (e) => {
+    let copyTarget = e.target.dataset.copytarget;
+    copyTarget = document.querySelector(copyTarget);
+    copyTarget.select();
+    document.execCommand('copy');
   });
 
   document.addEventListener('dragover', (e) => {
