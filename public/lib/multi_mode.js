@@ -1,6 +1,6 @@
 // idea: generate game with extra hard mode(8 pc)
-// instanciate two players who has game object
-// instanciate one game and copy the game to make the same one
+// instantiate two players who has game object
+// instantiate one game and copy the game to make the same one
 // each player has game and board
 // player class has the method to send signals to others
 
@@ -8,6 +8,7 @@ import Game from './game.js';
 import crypto from 'crypto';
 /* global io */
 const socket = io();
+import Player from './player.js';
 
 class MultiMode {
   constructor(options) {
@@ -31,7 +32,7 @@ class MultiMode {
     let roomId = crypto.randomBytes(5).toString('hex');
     window.history.replaceState({}, '', roomId);
     this.options.roomLink.value = window.location.href;
-    socket.emit('newRoom', roomId);
+    socket.emit('newRoom', {roomId: roomId, player: player});
   }
 
   resetUIShow() {

@@ -956,8 +956,8 @@
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // idea: generate game with extra hard mode(8 pc)
-	// instanciate two players who has game object
-	// instanciate one game and copy the game to make the same one
+	// instantiate two players who has game object
+	// instantiate one game and copy the game to make the same one
 	// each player has game and board
 	// player class has the method to send signals to others
 	
@@ -968,6 +968,10 @@
 	var _crypto = __webpack_require__(9);
 	
 	var _crypto2 = _interopRequireDefault(_crypto);
+	
+	var _player = __webpack_require__(32);
+	
+	var _player2 = _interopRequireDefault(_player);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1003,7 +1007,7 @@
 	      var roomId = _crypto2.default.randomBytes(5).toString('hex');
 	      window.history.replaceState({}, '', roomId);
 	      this.options.roomLink.value = window.location.href;
-	      socket.emit('newRoom', roomId);
+	      socket.emit('newRoom', { roomId: roomId, player: player });
 	    }
 	  }, {
 	    key: 'resetUIShow',
@@ -5213,6 +5217,24 @@
 	}
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10).Buffer))
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _game = __webpack_require__(3);
+	
+	var _game2 = _interopRequireDefault(_game);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Player = function Player() {
+	  _classCallCheck(this, Player);
+	};
 
 /***/ }
 /******/ ]);
