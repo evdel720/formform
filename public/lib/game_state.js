@@ -2,12 +2,12 @@ class GameState {
   constructor(io, socket, roomId) {
     this.io = io;
     this.roomId = roomId;
-    this.sockets = {};
+    this.sockets = new Map();
     this.players = {
       1: null,
       2: null
     };
-    this.playersReady = {};
+    this.playersReady = new Map();
     this.game = null;
     this.isPlaying = false;
     this.addSocket(socket);
@@ -23,4 +23,4 @@ class GameState {
   }
 }
 
-export default GameState;
+module.exports = GameState;
