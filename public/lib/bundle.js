@@ -40,9 +40,8 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59,6 +58,8 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	/* global io */
+	var socket = io();
 	// check if the user is invited user (has the roomSet already)
 	
 	document.addEventListener('DOMContentLoaded', function () {
@@ -80,21 +81,27 @@
 	  };
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
-	  //
-	  // let pageURL = decodeURIComponent(window.location.search.substring(1));
-	  // let param = pageURL.split('=');
-	  // let roomId;
-	  // if (param[0] === 'room_id') {
-	  //   roomId = param[1];
-	  // }
+	
+	  var pageURL = decodeURIComponent(window.location.search.substring(1));
+	  var param = pageURL.split('=');
+	  var roomId = void 0;
+	  if (param[0] === 'room_id') {
+	    roomId = param[1];
+	    socket.emit('joinRoom', roomId);
+	  }
 	
 	  var multi = new _multi_mode2.default(options);
 	  var solo = new _solo_mode2.default(options);
 	
-	  var gameMode = solo;
+	  var gameMode = roomId ? multi : solo;
 	  gameMode.enableUI();
 	  options.mode.addEventListener('click', function () {
-	    gameMode = gameMode.mode !== 'solo' ? solo : multi;
+	    if (gameMode.mode === 'solo') {
+	      gameMode = multi;
+	      gameMode.setUpNewRoom();
+	    } else {
+	      gameMode = solo;
+	    }
 	    gameMode.enableUI();
 	  });
 	
@@ -137,8 +144,7 @@
 	});
 
 /***/ },
-
-/***/ 1:
+/* 1 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -236,8 +242,7 @@
 	exports.placePieceOnBoard = placePieceOnBoard;
 
 /***/ },
-
-/***/ 2:
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -337,8 +342,7 @@
 	exports.default = SoloMode;
 
 /***/ },
-
-/***/ 3:
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -507,8 +511,7 @@
 	exports.default = Game;
 
 /***/ },
-
-/***/ 4:
+/* 4 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -753,8 +756,7 @@
 	exports.default = Board;
 
 /***/ },
-
-/***/ 5:
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -817,8 +819,7 @@
 	exports.default = Piece;
 
 /***/ },
-
-/***/ 6:
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -870,8 +871,7 @@
 	});
 
 /***/ },
-
-/***/ 7:
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -954,8 +954,7 @@
 	exports.default = Timer;
 
 /***/ },
-
-/***/ 8:
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -974,7 +973,7 @@
 	
 	var _game2 = _interopRequireDefault(_game);
 	
-	var _player = __webpack_require__(32);
+	var _player = __webpack_require__(9);
 	
 	var _player2 = _interopRequireDefault(_player);
 	
@@ -1003,18 +1002,28 @@
 	      this.options.roomSet.classList.remove('hidden');
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
-	      socket.emit("newRoom");
-	      // this.setUpNewRoom();
+	      socket.on("matchSuccess", function () {
+	        console.log('match succeeded');
+	      });
 	    }
-	    //
-	    // setUpNewRoom() {
-	    //   // this only happens when the user generate new room
-	    //   let roomId = crypto.randomBytes(5).toString('hex');
-	    //   window.history.replaceState({}, '', roomId);
-	    //   this.options.roomLink.value = window.location.href;
-	    //   socket.emit('newRoom', {roomId: roomId, player: player});
-	    // }
+	  }, {
+	    key: 'setLink',
+	    value: function setLink() {
+	      var _this = this;
 	
+	      socket.on("setLink", function (roomId) {
+	        var link = window.location.origin + "?room_id=" + roomId;
+	        window.history.replaceState({}, link);
+	        _this.options.roomLink.value = link;
+	      });
+	    }
+	  }, {
+	    key: 'setUpNewRoom',
+	    value: function setUpNewRoom() {
+	      // this only happens when the user generate new room
+	      socket.emit("newRoom");
+	      this.setLink();
+	    }
 	  }, {
 	    key: 'resetUIShow',
 	    value: function resetUIShow() {}
@@ -1032,8 +1041,7 @@
 	exports.default = MultiMode;
 
 /***/ },
-
-/***/ 32:
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1057,6 +1065,5 @@
 	exports.default = Player;
 
 /***/ }
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=bundle.js.map

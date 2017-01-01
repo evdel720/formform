@@ -14,7 +14,7 @@ class GameState {
   }
 
   addSocket(socket) {
-    if (this.sockets.size < 2 && !this.isPlaying) {
+    if (this.sockets.size < 3 && !this.isPlaying) {
       this.sockets[socket.id] = socket;
       socket.join(this.roomId);
       // do something here

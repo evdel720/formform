@@ -2,6 +2,9 @@ import { getGridNode, dropHandler, setLevelHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
 import MultiMode from './multi_mode.js';
+
+/* global io */
+const socket = io();
 // check if the user is invited user (has the roomSet already)
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,21 +26,27 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   options.boardNode = getGridNode(options.board);
-  //
-  // let pageURL = decodeURIComponent(window.location.search.substring(1));
-  // let param = pageURL.split('=');
-  // let roomId;
-  // if (param[0] === 'room_id') {
-  //   roomId = param[1];
-  // }
+
+  let pageURL = decodeURIComponent(window.location.search.substring(1));
+  let param = pageURL.split('=');
+  let roomId;
+  if (param[0] === 'room_id') {
+    roomId = param[1];
+    socket.emit('joinRoom', roomId);
+  }
 
   let multi = new MultiMode(options);
   let solo = new SoloMode(options);
 
-  let gameMode = solo;
+  let gameMode = roomId ? multi : solo;
   gameMode.enableUI();
   options.mode.addEventListener('click', () => {
-    gameMode = gameMode.mode !== 'solo' ? solo : multi;
+    if (gameMode.mode === 'solo') {
+      gameMode = multi;
+      gameMode.setUpNewRoom();
+    } else {
+      gameMode = solo;
+    }
     gameMode.enableUI();
   });
 

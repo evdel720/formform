@@ -10,13 +10,15 @@ const allRooms = new Map();
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
+  console.log('a user connected');
   socket.on('newRoom', () => {
     let roomId = crypto.randomBytes(5).toString('hex');
     while (allRooms.get(roomId)) {
       roomId = crypto.randomBytes(5).toString('hex');
     }
-    allRooms.set(roomId, new GameState(io, socket, roomId));
-    socket.emit('joinRoom', roomId);
+    let newGameState = new GameState(io, socket, roomId);
+    allRooms.set(roomId, newGameState);
+    socket.emit('setLink', roomId);
   });
 
   socket.on('joinRoom', (roomId) => {
@@ -25,7 +27,9 @@ io.on('connection', (socket) => {
       // failing with no room
     } else {
       let joinSuccess = gameState.addSocket(socket);
-      if (!joinSuccess) {
+      if (joinSuccess) {
+        socket.broadcast.to(roomId).emit('matchSuccess');
+      } else {
         // failing with full room
       }
     }

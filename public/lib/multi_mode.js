@@ -23,17 +23,24 @@ class MultiMode {
     this.options.roomSet.classList.remove('hidden');
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
-    socket.emit("newRoom");
-    // this.setUpNewRoom();
+    socket.on("matchSuccess", () => {
+      console.log('match succeeded');
+    });
   }
-  //
-  // setUpNewRoom() {
-  //   // this only happens when the user generate new room
-  //   let roomId = crypto.randomBytes(5).toString('hex');
-  //   window.history.replaceState({}, '', roomId);
-  //   this.options.roomLink.value = window.location.href;
-  //   socket.emit('newRoom', {roomId: roomId, player: player});
-  // }
+
+  setLink() {
+    socket.on("setLink", (roomId) => {
+      let link = window.location.origin + "?room_id=" + roomId;
+      window.history.replaceState({}, link);
+      this.options.roomLink.value = link;
+    });
+  }
+
+  setUpNewRoom() {
+    // this only happens when the user generate new room
+    socket.emit("newRoom");
+    this.setLink();
+  }
 
   resetUIShow() {
 
