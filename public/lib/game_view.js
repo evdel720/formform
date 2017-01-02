@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lostSound: document.getElementById('lost-sound'),
     placeSound: document.getElementById('place-sound'),
     roomSet: document.getElementById('room-set'),
-    roomLink: document.getElementById('room-link')
+    roomLink: document.getElementById('room-link'),
+    opponent: document.getElementById('opponent-board')
   };
 
   options.boardNode = getGridNode(options.board);

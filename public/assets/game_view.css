@@ -204,3 +204,9 @@ button:focus {
 #copy:active {
   transform: none;
 }
+
+#main:disabled {
+  transform: none;
+  background: #ccc;
+  cursor: default;
+}

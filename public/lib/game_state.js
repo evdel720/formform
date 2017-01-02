@@ -1,3 +1,5 @@
+const Game = require('./game.js');
+
 class GameState {
   constructor(io, socket, roomId) {
     this.io = io;

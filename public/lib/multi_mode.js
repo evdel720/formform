@@ -22,8 +22,10 @@ class MultiMode {
     this.options.roomSet.classList.remove('hidden');
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
-    window.socket = socket;
+    this.options.main.disabled = true;
     socket.on("matchSuccess", () => {
+      this.options.roomSet.classList.add('hidden');
+      this.options.opponent.classList.remove('hidden');
       console.log('match succeeded');
     });
   }
@@ -31,7 +33,7 @@ class MultiMode {
   setLink() {
     socket.on("setLink", (roomId) => {
       let link = window.location.origin + "?room_id=" + roomId;
-      window.history.replaceState({}, link);
+      window.history.replaceState({}, '', link);
       this.options.roomLink.value = link;
     });
   }

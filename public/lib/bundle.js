@@ -75,7 +75,8 @@
 	    lostSound: document.getElementById('lost-sound'),
 	    placeSound: document.getElementById('place-sound'),
 	    roomSet: document.getElementById('room-set'),
-	    roomLink: document.getElementById('room-link')
+	    roomLink: document.getElementById('room-link'),
+	    opponent: document.getElementById('opponent-board')
 	  };
 	
 	  options.boardNode = (0, _utils.getGridNode)(options.board);
@@ -994,25 +995,29 @@
 	  _createClass(MultiMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
+	      var _this = this;
+	
 	      this.options.timer.classList.add('hidden');
 	      this.options.levels.classList.add('hidden');
 	      this.options.roomSet.classList.remove('hidden');
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
-	      window.socket = socket;
+	      this.options.main.disabled = true;
 	      socket.on("matchSuccess", function () {
+	        _this.options.roomSet.classList.add('hidden');
+	        _this.options.opponent.classList.remove('hidden');
 	        console.log('match succeeded');
 	      });
 	    }
 	  }, {
 	    key: 'setLink',
 	    value: function setLink() {
-	      var _this = this;
+	      var _this2 = this;
 	
 	      socket.on("setLink", function (roomId) {
 	        var link = window.location.origin + "?room_id=" + roomId;
-	        window.history.replaceState({}, link);
-	        _this.options.roomLink.value = link;
+	        window.history.replaceState({}, '', link);
+	        _this2.options.roomLink.value = link;
 	      });
 	    }
 	  }, {
