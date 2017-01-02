@@ -5,9 +5,9 @@ const io = require('socket.io')(server);
 const crypto = require('crypto');
 const GameState = require('./public/lib/game_state.js');
 
-const allRooms = new Map();
-
 app.use(express.static('public'));
+
+const allRooms = new Map();
 
 io.on('connection', (socket) => {
   console.log('a user connected');
@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
     } else {
       let joinSuccess = gameState.addSocket(socket);
       if (joinSuccess) {
-        socket.broadcast.to(roomId).emit('matchSuccess');
+        io.to(roomId).emit('matchSuccess');
       } else {
         // failing with full room
       }

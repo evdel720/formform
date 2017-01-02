@@ -58,9 +58,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	/* global io */
-	var socket = io();
-	// check if the user is invited user (has the roomSet already)
+	/* global socket */
 	
 	document.addEventListener('DOMContentLoaded', function () {
 	  var options = {
@@ -981,8 +979,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	/* global io */
-	var socket = io();
+	/* global socket */
 	
 	var MultiMode = function () {
 	  function MultiMode(options) {
@@ -1002,6 +999,7 @@
 	      this.options.roomSet.classList.remove('hidden');
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
+	      window.socket = socket;
 	      socket.on("matchSuccess", function () {
 	        console.log('match succeeded');
 	      });

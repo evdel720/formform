@@ -5,9 +5,8 @@
 // player class has the method to send signals to others
 
 import Game from './game.js';
-/* global io */
-const socket = io();
 import Player from './player.js';
+/* global socket */
 
 class MultiMode {
   constructor(options) {
@@ -23,6 +22,7 @@ class MultiMode {
     this.options.roomSet.classList.remove('hidden');
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
+    window.socket = socket;
     socket.on("matchSuccess", () => {
       console.log('match succeeded');
     });

@@ -2,10 +2,7 @@ import { getGridNode, dropHandler, setLevelHandler } from './utils.js';
 
 import SoloMode from './solo_mode.js';
 import MultiMode from './multi_mode.js';
-
-/* global io */
-const socket = io();
-// check if the user is invited user (has the roomSet already)
+/* global socket */
 
 document.addEventListener('DOMContentLoaded', () => {
   let options = {

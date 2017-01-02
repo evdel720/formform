@@ -1,3 +1,0 @@
-Multi player mode with socket.io
-Weekly leader board
-Faster loading time!
