@@ -3,10 +3,6 @@ class GameState {
     this.io = io;
     this.roomId = roomId;
     this.sockets = new Map();
-    this.players = {
-      1: null,
-      2: null
-    };
     this.playersReady = new Map();
     this.game = null;
     this.isPlaying = false;
@@ -18,12 +14,13 @@ class GameState {
       this.sockets.set(socket.id, socket);
       socket.join(this.roomId);
       this.setUpDisconnect(socket);
+      this.setUpReady(socket);
       return true;
     }
   }
 
   disconnectAction(socket) {
-    if (this.sockets.get(socket)) {
+    if (this.sockets.get(socket.id)) {
       socket.leave(this.roomId);
       this.sockets.delete(socket.id);
       this.io.to(this.roomId).emit('opponentDisconnected');
@@ -33,6 +30,18 @@ class GameState {
         // get rid of the player
       }
     }
+  }
+
+  setUpReady(socket) {
+    socket.on('ready', () => {
+      this.playersReady.set(socket.id, true);
+      if (this.playersReady.size === 2) {
+        this.io.to(this.roomId).emit("newGame", 'piecedata');
+      }
+    });
+    socket.on('cancelReady', () => {
+      this.playersReady.delete(socket.id);
+    });
   }
 
   setUpDisconnect(socket) {

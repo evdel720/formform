@@ -61,10 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // common things for both
       // when user clicks main button to start new game
     } else {
-      options.main.innerText = "Quit";
       options.instruction.classList.add("hidden");
-      options.rotate.classList.remove("hidden");
-      options.flip.classList.remove("hidden");
     }
     gameMode.mainBtnHandler();
   });

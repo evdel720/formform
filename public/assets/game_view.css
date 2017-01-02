@@ -210,3 +210,8 @@ button:focus {
   background: #ccc;
   cursor: default;
 }
+
+.ready {
+  border: 5px inset rgb(136, 79, 49);
+  background-color: rgb(208, 166, 53);
+}

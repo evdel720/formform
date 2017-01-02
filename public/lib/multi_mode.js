@@ -12,8 +12,9 @@ class MultiMode {
   constructor(options) {
     this.mode = 'multi';
     this.options = options;
-    // this.game = new Game(options.boardNode, options.pieces);
-    // this.game.pieceNum = 8;
+    this.ready = false;
+    this.game = {};
+    this.game.isPlaying = false;
   }
 
   enableUI() {
@@ -29,7 +30,18 @@ class MultiMode {
       this.options.opponent.classList.remove('hidden');
       this.options.main.disabled = false;
       this.setUpDisconnect();
-      console.log('match succeeded');
+      this.setUpNewGame();
+    });
+  }
+
+  setUpNewGame() {
+    socket.on("newGame", (data) => {
+      this.options.main.classList.remove('ready');
+      this.options.main.innerText = 'Quit';
+      this.options.rotate.classList.remove("hidden");
+      this.options.flip.classList.remove("hidden");
+      console.log(data);
+      console.log('new game set!');
     });
   }
 
@@ -38,6 +50,8 @@ class MultiMode {
       window.alert("Your opponent is disconnected.");
       this.options.roomSet.classList.remove('hidden');
       this.options.opponent.classList.add('hidden');
+      this.options.rotate.classList.add('hidden');
+      this.options.flip.classList.add('hidden');
       this.options.main.disabled = true;
     });
   }
@@ -50,17 +64,18 @@ class MultiMode {
     });
   }
 
-  setUpNewRoom() {
-    // this only happens when the user generate new room
-    this.setLink();
-  }
-
   resetUIShow() {
 
   }
 
   mainBtnHandler() {
-
+    if (this.ready) {
+      socket.emit('cancelReady');
+    } else {
+      socket.emit('ready');
+    }
+    this.ready = !this.ready;
+    this.options.main.classList.toggle("ready");
   }
 
   movePiece(action) {

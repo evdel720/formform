@@ -117,10 +117,7 @@
 	      // common things for both
 	      // when user clicks main button to start new game
 	    } else {
-	      options.main.innerText = "Quit";
 	      options.instruction.classList.add("hidden");
-	      options.rotate.classList.remove("hidden");
-	      options.flip.classList.remove("hidden");
 	    }
 	    gameMode.mainBtnHandler();
 	  });
@@ -288,9 +285,12 @@
 	    key: 'enableUI',
 	    value: function enableUI() {
 	      window.history.replaceState({}, '', window.location.origin);
+	      this.options.rotate.classList.add('hidden');
+	      this.options.flip.classList.add('hidden');
+	      this.options.main.classList.remove("ready");
 	      this.options.mode.innerText = "Battle";
-	      this.options.main.innerText = "Play";
 	      this.options.main.disabled = false;
+	      this.options.main.innerText = "Play";
 	      this.options.levels.classList.remove("hidden");
 	      this.options.roomSet.classList.add('hidden');
 	    }
@@ -302,6 +302,9 @@
 	        this.timer.stop();
 	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
 	      } else {
+	        this.options.rotate.classList.remove("hidden");
+	        this.options.flip.classList.remove("hidden");
+	        this.options.main.innerText = 'Quit';
 	        this.options.timer.classList.remove("hidden");
 	        this.options.mode.classList.add("hidden");
 	        this.options.levels.classList.add("hidden");
@@ -998,8 +1001,9 @@
 	
 	    this.mode = 'multi';
 	    this.options = options;
-	    // this.game = new Game(options.boardNode, options.pieces);
-	    // this.game.pieceNum = 8;
+	    this.ready = false;
+	    this.game = {};
+	    this.game.isPlaying = false;
 	  }
 	
 	  _createClass(MultiMode, [{
@@ -1019,44 +1023,62 @@
 	        _this.options.opponent.classList.remove('hidden');
 	        _this.options.main.disabled = false;
 	        _this.setUpDisconnect();
-	        console.log('match succeeded');
+	        _this.setUpNewGame();
+	      });
+	    }
+	  }, {
+	    key: 'setUpNewGame',
+	    value: function setUpNewGame() {
+	      var _this2 = this;
+	
+	      socket.on("newGame", function (data) {
+	        _this2.options.main.classList.remove('ready');
+	        _this2.options.main.innerText = 'Quit';
+	        _this2.options.rotate.classList.remove("hidden");
+	        _this2.options.flip.classList.remove("hidden");
+	        console.log(data);
+	        console.log('new game set!');
 	      });
 	    }
 	  }, {
 	    key: 'setUpDisconnect',
 	    value: function setUpDisconnect() {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      socket.on("opponentDisconnected", function () {
 	        window.alert("Your opponent is disconnected.");
-	        _this2.options.roomSet.classList.remove('hidden');
-	        _this2.options.opponent.classList.add('hidden');
-	        _this2.options.main.disabled = true;
+	        _this3.options.roomSet.classList.remove('hidden');
+	        _this3.options.opponent.classList.add('hidden');
+	        _this3.options.rotate.classList.add('hidden');
+	        _this3.options.flip.classList.add('hidden');
+	        _this3.options.main.disabled = true;
 	      });
 	    }
 	  }, {
 	    key: 'setLink',
 	    value: function setLink() {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      socket.on("setLink", function (roomId) {
 	        var link = window.location.origin + "?room_id=" + roomId;
 	        window.history.replaceState({}, '', link);
-	        _this3.options.roomLink.value = link;
+	        _this4.options.roomLink.value = link;
 	      });
-	    }
-	  }, {
-	    key: 'setUpNewRoom',
-	    value: function setUpNewRoom() {
-	      // this only happens when the user generate new room
-	      this.setLink();
 	    }
 	  }, {
 	    key: 'resetUIShow',
 	    value: function resetUIShow() {}
 	  }, {
 	    key: 'mainBtnHandler',
-	    value: function mainBtnHandler() {}
+	    value: function mainBtnHandler() {
+	      if (this.ready) {
+	        socket.emit('cancelReady');
+	      } else {
+	        socket.emit('ready');
+	      }
+	      this.ready = !this.ready;
+	      this.options.main.classList.toggle("ready");
+	    }
 	  }, {
 	    key: 'movePiece',
 	    value: function movePiece(action) {}
