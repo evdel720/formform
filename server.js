@@ -22,15 +22,17 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', (roomId) => {
+    console.log(allRooms);
     let gameState = allRooms.get(roomId);
     if (gameState === undefined) {
-      // failing with no room
+      socket.emit('failure', "Can't find the room. Please check the room ID.");
     } else {
       let joinSuccess = gameState.addSocket(socket);
+      console.log(joinSuccess);
       if (joinSuccess) {
         io.to(roomId).emit('matchSuccess');
       } else {
-        // failing with full room
+        socket.emit('failure', "The room is currently full.");
       }
     }
   });

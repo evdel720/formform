@@ -5,6 +5,7 @@ import MultiMode from './multi_mode.js';
 /* global socket */
 
 document.addEventListener('DOMContentLoaded', () => {
+  let notification = document.getElementById('notification');
   let options = {
     board: document.getElementById('board'),
     pieces: document.getElementById('pieces'),
@@ -31,6 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (param[0] === 'room_id') {
     roomId = param[1];
     socket.emit('joinRoom', roomId);
+    socket.on('failure', (message) => {
+      window.alert(message);
+      window.history.replaceState({}, '', window.location.origin);
+      gameMode = solo;
+      gameMode.enableUI();
+    });
   }
 
   let multi = new MultiMode(options);

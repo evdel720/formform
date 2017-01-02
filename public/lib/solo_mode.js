@@ -12,8 +12,10 @@ class SoloMode {
   }
 
   enableUI() {
+    window.history.replaceState({}, '', window.location.origin);
     this.options.mode.innerText = "Battle";
     this.options.main.innerText = "Play";
+    this.options.main.disabled = false;
     this.options.levels.classList.remove("hidden");
     this.options.roomSet.classList.add('hidden');
   }

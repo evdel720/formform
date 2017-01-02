@@ -61,6 +61,7 @@
 	/* global socket */
 	
 	document.addEventListener('DOMContentLoaded', function () {
+	  var notification = document.getElementById('notification');
 	  var options = {
 	    board: document.getElementById('board'),
 	    pieces: document.getElementById('pieces'),
@@ -87,6 +88,12 @@
 	  if (param[0] === 'room_id') {
 	    roomId = param[1];
 	    socket.emit('joinRoom', roomId);
+	    socket.on('failure', function (message) {
+	      window.alert(message);
+	      window.history.replaceState({}, '', window.location.origin);
+	      gameMode = solo;
+	      gameMode.enableUI();
+	    });
 	  }
 	
 	  var multi = new _multi_mode2.default(options);
@@ -279,8 +286,10 @@
 	  _createClass(SoloMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
+	      window.history.replaceState({}, '', window.location.origin);
 	      this.options.mode.innerText = "Battle";
 	      this.options.main.innerText = "Play";
+	      this.options.main.disabled = false;
 	      this.options.levels.classList.remove("hidden");
 	      this.options.roomSet.classList.add('hidden');
 	    }
