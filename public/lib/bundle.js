@@ -104,8 +104,9 @@
 	  options.mode.addEventListener('click', function () {
 	    if (gameMode.mode === 'solo') {
 	      gameMode = multi;
-	      gameMode.setUpNewRoom();
+	      socket.emit('newRoom');
 	    } else {
+	      socket.emit('changeMode');
 	      gameMode = solo;
 	    }
 	    gameMode.enableUI();
@@ -1012,28 +1013,42 @@
 	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
 	      this.options.main.disabled = true;
+	      this.setLink();
 	      socket.on("matchSuccess", function () {
 	        _this.options.roomSet.classList.add('hidden');
 	        _this.options.opponent.classList.remove('hidden');
+	        _this.options.main.disabled = false;
+	        _this.setUpDisconnect();
 	        console.log('match succeeded');
+	      });
+	    }
+	  }, {
+	    key: 'setUpDisconnect',
+	    value: function setUpDisconnect() {
+	      var _this2 = this;
+	
+	      socket.on("opponentDisconnected", function () {
+	        window.alert("Your opponent is disconnected.");
+	        _this2.options.roomSet.classList.remove('hidden');
+	        _this2.options.opponent.classList.add('hidden');
+	        _this2.options.main.disabled = true;
 	      });
 	    }
 	  }, {
 	    key: 'setLink',
 	    value: function setLink() {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      socket.on("setLink", function (roomId) {
 	        var link = window.location.origin + "?room_id=" + roomId;
 	        window.history.replaceState({}, '', link);
-	        _this2.options.roomLink.value = link;
+	        _this3.options.roomLink.value = link;
 	      });
 	    }
 	  }, {
 	    key: 'setUpNewRoom',
 	    value: function setUpNewRoom() {
 	      // this only happens when the user generate new room
-	      socket.emit("newRoom");
 	      this.setLink();
 	    }
 	  }, {

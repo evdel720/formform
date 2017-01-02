@@ -22,23 +22,18 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', (roomId) => {
-    console.log(allRooms);
     let gameState = allRooms.get(roomId);
     if (gameState === undefined) {
       socket.emit('failure', "Can't find the room. Please check the room ID.");
     } else {
       let joinSuccess = gameState.addSocket(socket);
-      console.log(joinSuccess);
       if (joinSuccess) {
+        socket.emit('setLink', roomId);
         io.to(roomId).emit('matchSuccess');
       } else {
         socket.emit('failure', "The room is currently full.");
       }
     }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
   });
 });
 

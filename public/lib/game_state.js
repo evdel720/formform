@@ -17,9 +17,31 @@ class GameState {
     if (this.sockets.size < 2 && !this.isPlaying) {
       this.sockets.set(socket.id, socket);
       socket.join(this.roomId);
-      // do something here
+      this.setUpDisconnect(socket);
       return true;
     }
+  }
+
+  disconnectAction(socket) {
+    if (this.sockets.get(socket)) {
+      socket.leave(this.roomId);
+      this.sockets.delete(socket.id);
+      this.io.to(this.roomId).emit('opponentDisconnected');
+      if (this.isPlaying) {
+        this.isPlaying = false;
+        // stop the game
+        // get rid of the player
+      }
+    }
+  }
+
+  setUpDisconnect(socket) {
+    socket.on('changeMode', () => {
+      this.disconnectAction(socket);
+    });
+    socket.on('disconnect', () => {
+      this.disconnectAction(socket);
+    });
   }
 }
 

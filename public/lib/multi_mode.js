@@ -23,10 +23,22 @@ class MultiMode {
     this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
     this.options.main.disabled = true;
+    this.setLink();
     socket.on("matchSuccess", () => {
       this.options.roomSet.classList.add('hidden');
       this.options.opponent.classList.remove('hidden');
+      this.options.main.disabled = false;
+      this.setUpDisconnect();
       console.log('match succeeded');
+    });
+  }
+
+  setUpDisconnect() {
+    socket.on("opponentDisconnected", () => {
+      window.alert("Your opponent is disconnected.");
+      this.options.roomSet.classList.remove('hidden');
+      this.options.opponent.classList.add('hidden');
+      this.options.main.disabled = true;
     });
   }
 
@@ -40,7 +52,6 @@ class MultiMode {
 
   setUpNewRoom() {
     // this only happens when the user generate new room
-    socket.emit("newRoom");
     this.setLink();
   }
 

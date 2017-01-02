@@ -48,8 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
   options.mode.addEventListener('click', () => {
     if (gameMode.mode === 'solo') {
       gameMode = multi;
-      gameMode.setUpNewRoom();
+      socket.emit('newRoom');
     } else {
+      socket.emit('changeMode');
       gameMode = solo;
     }
     gameMode.enableUI();
