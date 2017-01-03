@@ -1,18 +1,18 @@
 # FormForm
 
-[FormForm live][https://evdel720.github.io/formform/]
+[FormForm live][http://formform.us-west-1.elasticbeanstalk.com/]
 
-  FormForm is a browser based puzzle game. It is implemented with JavaScript(ES6), HTML and CSS using webpack and babel.
+  FormForm is a browser based puzzle game. It is implemented with JavaScript(ES6), HTML and CSS using webpack, babel, WebSocket, express.js, and node.js, and deployed with AWS Elastic Beanstalk.
 
 ## Background
-  I wanted to build a fun and educational game that can help developing a geometrical sense. With FormForm, the user can think about various ways to make a certain board with given pieces. I love the idea of generating a random board and giving the user freedom to make the board with given pieces.
+  I wanted to build a fun and educational game that can help developing a geometrical sense. With FormForm, users can think about various ways to make a certain board with given pieces. I love the idea of generating a random board and giving users freedom to make the board with given pieces.
   ![formform_gif](https://res.cloudinary.com/wkdal720/image/upload/v1481661014/imageedit__4466087888_nqlmek.gif)
 
 ## How to play
-  First, set proper difficulty level for you. Then click the Play button. That generates the green board on the left and pieces on the right.
-  Second, drag pieces to where you want to place the piece on the board. The goal is fill all the green cells on the board by using all the pieces.
+  First, set the proper difficulty level for you. Then click the Play button. That generates the green board on the left and pieces on the right.
+  Second, drag pieces to where you want to place them on the board. The goal is to fill all the green cells on the board by using all the pieces.
   Third, you can rotate/flip your piece when you select one.
-  Fourth, you can take a piece off the board by clicking.
+  Fourth, you can remove a piece from the board by clicking.
   Fifth, enjoy!
 
 ## Features & Implementation
@@ -20,7 +20,7 @@
 ### Setup Piece Object
   I pre-populated the pieces as objects in /lib/piece_array.js with all the possible rotations. Each piece object has all the rotations as an array and possible indexes.
   possibleIndexes are for avoiding duplicated calculation when the app tries to generate a random board.
-  I pre-populated the pieces to optimize the running time. Once a user loads the piece_array.js on the client side, no matter how many times they play, it never actually rotates or flips the piece. It uses the already made pieces and simply moves the index of the piece according to the action.
+  I pre-populated the pieces to optimize the running time. Once users load the piece_array.js on the client side, no matter how many times they play, it never actually rotates or flips the piece. It uses the already made pieces and simply moves the index of the piece according to the action.
 
 ### Generate random board
   When the user clicks play, the game object will generate a new board object with randomly picked pieces. In the generating process, it first shuffles the pieces (because the placement order matters). Then, it picks one piece from pieces, take its rotated version randomly, and places it on the board. After that, it goes through the shuffled pieces and places each one on the board.
@@ -49,10 +49,14 @@
 ### Drag and Drop UI
   The pieces are draggable html elements. I gave the board's children the dropzone class to check if the piece was dropped in the right place. I kept the drop event handling and lots of other things in the utils.js to keep the game_view.js short.
 
-## Future Directions for the Project
+### Multi Players
+  After solo mode, I basically changed the whole structure of the app and implemented multi mode. I refactored the game_view.js to use common interfaces to invoke common behaviors for both of the modes using duck-typing. When a user clicks Battle button, it generates new room and add the user's socket to the room. It generates a unique room id for the room and lets the user copy and paste the url.
+  Another user can join and add his socket to the room and only after two players match, they can press the ready button and play the game.
+  In game play, two sockets send data to each other whenever a user places/removes a piece.
+  I made allRooms with JS Map Object to hold all GameStates on the server side. I avoided using DB since it was unnecessary for this simple two player game.
+  When all the users in one room disconnect, it removes the room from all rooms.
 
-### Multi player mode
-  Implement multi player mode using WebSocket
+## Future Directions for the Project
 
 ### Leader Board
   Implement weekly leader board

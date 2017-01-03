@@ -4,6 +4,7 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const crypto = require('crypto');
 const GameState = require('./public/lib/game_state.js');
+/* global Map */
 
 app.use(express.static('public'));
 
@@ -15,7 +16,7 @@ io.on('connection', (socket) => {
     while (allRooms.get(roomId)) {
       roomId = crypto.randomBytes(5).toString('hex');
     }
-    let newGameState = new GameState(io, socket, roomId);
+    let newGameState = new GameState(io, socket, roomId, allRooms);
     allRooms.set(roomId, newGameState);
     socket.emit('setLink', roomId);
   });
@@ -26,10 +27,11 @@ io.on('connection', (socket) => {
       socket.emit('failure', "Can't find the room. Please check the room ID.");
     } else {
       let joinSuccess = gameState.addSocket(socket);
-      if (joinSuccess < 2) {
+      if (joinSuccess === 2) {
         socket.emit('setLink', roomId);
-      } else if (joinSuccess === 2) {
         io.to(roomId).emit('matchSuccess');
+      } else if (joinSuccess < 2) {
+        socket.emit('setLink', roomId);
       } else {
         socket.emit('failure', "The room is currently full.");
       }

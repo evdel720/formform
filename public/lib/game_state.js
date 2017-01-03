@@ -5,7 +5,8 @@ const amountOfPieces = 12;
 const possibleIndexes = 8;
 
 class GameState {
-  constructor(io, socket, roomId) {
+  constructor(io, socket, roomId, allRooms) {
+    this.allRooms = allRooms;
     this.io = io;
     this.roomId = roomId;
     this.sockets = new Map();
@@ -48,6 +49,9 @@ class GameState {
       this.playersReady = new Map();
       this.sockets.delete(socket.id);
       this.io.to(this.roomId).emit('opponentDisconnected');
+    }
+    if (this.sockets.size === 0) {
+      this.allRooms.delete(this.roomId);
     }
   }
 
