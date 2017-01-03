@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./assets/game_view.css">
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      const socket = io.connect('http://localhost:3000');
+      const socket = io.connect(window.location.origin);
     </script>
     <script type="text/javascript" src="./lib/bundle.js"></script>
   </head>
@@ -25,7 +25,16 @@
           <li>Hard</li>
         </ul>
         <h3 id="timer" class="hidden"></h3>
-        <div id="opponent-board" class="hidden"></div>
+        <div id="opponent-board" class="hidden">
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+          <ul><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+        </div>
         <div id="room-set" class="hidden">
           <p>Share the address to your opponent!</p>
           <input id="room-link" type="text" readonly/>

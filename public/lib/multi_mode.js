@@ -22,6 +22,15 @@ class MultiMode {
       this.options.main.disabled = false;
       this.setUpDisconnect();
       this.setUpNewGame();
+      this.setUpOpponentBoard();
+      this.lostHandler();
+    });
+  }
+
+  setUpOpponentBoard() {
+    socket.on("sendBoardData", data => {
+      this.opponentBoard = data;
+      // update board!
     });
   }
 
@@ -32,6 +41,7 @@ class MultiMode {
     this.options.rotate.classList.add('hidden');
     this.options.flip.classList.add('hidden');
     this.options.main.disabled = true;
+    this.opponentBoard = undefined;
   }
 
   setUpNewGame() {
@@ -77,12 +87,21 @@ class MultiMode {
   }
 
   boardChangeHandler() {
-    socket.emit('boardChanged', 'changed!');
+    socket.emit('boardChanged', this.game.board.board);
+  }
+
+  lostHandler() {
+    socket.on('lost', () => {
+      console.log('lost');
+      this.options.lostSound.play();
+    });
   }
 
   wonHandler() {
     // emit winning
-
+    // disable interaction for both of winning, losing
+    console.log('won');
+    socket.emit('won');
   }
 }
 

@@ -46,9 +46,6 @@ class Board {
   }
 
   placePiece(pieceNode, loc) {
-    if (this.gameMode) {
-      this.gameMode.boardChangeHandler();
-    }
     let pieceOb = this.pieceMap.get(pieceNode);
     let piece = pieceOb.currentPiece();
     for (let i=0; i<piece.length; i++) {
@@ -57,6 +54,9 @@ class Board {
           this.placeHelper([i+loc[0], j+loc[1]], pieceNode, pieceOb);
         }
       }
+    }
+    if (this.gameMode) {
+      this.gameMode.boardChangeHandler();
     }
     pieceNode.classList.add("hidden");
     pieceOb.placed = true;
@@ -88,9 +88,6 @@ class Board {
 
   removePiece(e) {
     if (this.isPlaying && e.target.classList.contains("placed-cell")) {
-      if (this.gameMode) {
-        this.gameMode.boardChangeHandler();
-      }
       let pieceNode = this.board.cellMap.get(e.target);
       pieceNode.classList.remove("hidden");
       this.pieceMap.get(pieceNode).placed = false;
@@ -104,6 +101,9 @@ class Board {
           }
         });
       });
+      if (this.gameMode) {
+        this.gameMode.boardChangeHandler();
+      }
     }
   }
 

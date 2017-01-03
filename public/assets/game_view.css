@@ -62,7 +62,7 @@ body {
   cursor: pointer;
 }
 
-#board ul, .piece ul {
+#board ul, .piece ul, #opponent-board ul {
   margin: 0 auto;
   padding: 0;
   display: flex;
@@ -71,10 +71,20 @@ body {
   height: 50px;
 }
 
+#opponent-board ul {
+  height: 15px;
+}
+
 #board ul li, .piece ul li {
   width: 50px;
   border: 2px inset #000;
   border-radius: 5px;
+}
+
+#opponent-board ul li {
+  width: 15px;
+  border: 0.5px inset #000;
+  background-color: rgb(253, 236, 206);
 }
 
 li.filled {
@@ -214,4 +224,9 @@ button:focus {
 .ready {
   border: 5px inset rgb(136, 79, 49);
   background-color: rgb(208, 166, 53);
+}
+
+#opponent-board {
+  margin-top: 20px;
+  align-self: baseline;
 }

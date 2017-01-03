@@ -602,9 +602,6 @@
 	  }, {
 	    key: "placePiece",
 	    value: function placePiece(pieceNode, loc) {
-	      if (this.gameMode) {
-	        this.gameMode.boardChangeHandler();
-	      }
 	      var pieceOb = this.pieceMap.get(pieceNode);
 	      var piece = pieceOb.currentPiece();
 	      for (var i = 0; i < piece.length; i++) {
@@ -613,6 +610,9 @@
 	            this.placeHelper([i + loc[0], j + loc[1]], pieceNode, pieceOb);
 	          }
 	        }
+	      }
+	      if (this.gameMode) {
+	        this.gameMode.boardChangeHandler();
 	      }
 	      pieceNode.classList.add("hidden");
 	      pieceOb.placed = true;
@@ -650,9 +650,6 @@
 	
 	      if (this.isPlaying && e.target.classList.contains("placed-cell")) {
 	        (function () {
-	          if (_this.gameMode) {
-	            _this.gameMode.boardChangeHandler();
-	          }
 	          var pieceNode = _this.board.cellMap.get(e.target);
 	          pieceNode.classList.remove("hidden");
 	          _this.pieceMap.get(pieceNode).placed = false;
@@ -666,6 +663,9 @@
 	              }
 	            });
 	          });
+	          if (_this.gameMode) {
+	            _this.gameMode.boardChangeHandler();
+	          }
 	        })();
 	      }
 	    }
@@ -1036,6 +1036,18 @@
 	        _this.options.main.disabled = false;
 	        _this.setUpDisconnect();
 	        _this.setUpNewGame();
+	        _this.setUpOpponentBoard();
+	        _this.lostHandler();
+	      });
+	    }
+	  }, {
+	    key: 'setUpOpponentBoard',
+	    value: function setUpOpponentBoard() {
+	      var _this2 = this;
+	
+	      socket.on("sendBoardData", function (data) {
+	        _this2.opponentBoard = data;
+	        // update board!
 	      });
 	    }
 	  }, {
@@ -1047,45 +1059,46 @@
 	      this.options.rotate.classList.add('hidden');
 	      this.options.flip.classList.add('hidden');
 	      this.options.main.disabled = true;
+	      this.opponentBoard = undefined;
 	    }
 	  }, {
 	    key: 'setUpNewGame',
 	    value: function setUpNewGame() {
-	      var _this2 = this;
+	      var _this3 = this;
 	
 	      socket.on("newGame", function (data) {
-	        _this2.options.main.classList.remove('ready');
-	        _this2.options.main.innerText = 'Quit';
-	        _this2.options.rotate.classList.remove("hidden");
-	        _this2.options.flip.classList.remove("hidden");
-	        _this2.game = new _game2.default(_this2.options.boardNode, _this2.options.pieces, data, _this2);
-	        _this2.game.play();
+	        _this3.options.main.classList.remove('ready');
+	        _this3.options.main.innerText = 'Quit';
+	        _this3.options.rotate.classList.remove("hidden");
+	        _this3.options.flip.classList.remove("hidden");
+	        _this3.game = new _game2.default(_this3.options.boardNode, _this3.options.pieces, data, _this3);
+	        _this3.game.play();
 	      });
 	    }
 	  }, {
 	    key: 'setUpDisconnect',
 	    value: function setUpDisconnect() {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      socket.on("opponentDisconnected", function () {
 	        window.alert("Your opponent is disconnected.");
-	        _this3.initialUI();
-	        _this3.mainBtnHandler();
-	        if (_this3.game) {
-	          _this3.game.clearBoard();
-	          _this3.game = undefined;
+	        _this4.initialUI();
+	        _this4.mainBtnHandler();
+	        if (_this4.game) {
+	          _this4.game.clearBoard();
+	          _this4.game = undefined;
 	        }
 	      });
 	    }
 	  }, {
 	    key: 'setLink',
 	    value: function setLink() {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      socket.on("setLink", function (roomId) {
 	        var link = window.location.origin + "?room_id=" + roomId;
 	        window.history.replaceState({}, '', link);
-	        _this4.options.roomLink.value = link;
+	        _this5.options.roomLink.value = link;
 	      });
 	    }
 	  }, {
@@ -1103,13 +1116,25 @@
 	  }, {
 	    key: 'boardChangeHandler',
 	    value: function boardChangeHandler() {
-	      socket.emit('boardChanged', 'changed!');
+	      socket.emit('boardChanged', this.game.board.board);
+	    }
+	  }, {
+	    key: 'lostHandler',
+	    value: function lostHandler() {
+	      var _this6 = this;
+	
+	      socket.on('lost', function () {
+	        console.log('lost');
+	        _this6.options.lostSound.play();
+	      });
 	    }
 	  }, {
 	    key: 'wonHandler',
 	    value: function wonHandler() {
 	      // emit winning
-	
+	      // disable interaction for both of winning, losing
+	      console.log('won');
+	      socket.emit('won');
 	    }
 	  }]);
 	
