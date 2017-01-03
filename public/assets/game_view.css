@@ -241,3 +241,26 @@ button:focus {
   transition: background-color 0.5s ease;
   background-color: rgb(0, 128, 255);
 }
+
+#contacts {
+  display: flex;
+  position: absolute;
+  bottom: 5px;
+  right: 10%;
+  justify-content: center;
+}
+
+#contacts > a {
+  margin-right: 30px;
+}
+
+#contacts > a > img {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+#contacts > a > img:hover {
+  background-color: rgb(246, 194, 59);
+  border-radius: 50%;
+}
