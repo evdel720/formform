@@ -1,6 +1,6 @@
 /* global Map */
 const lengthOfColors = 11;
-const lengthOfGamePieces = 2;
+const lengthOfGamePieces = 8;
 const amountOfPieces = 12;
 const possibleIndexes = 8;
 
