@@ -1,4 +1,5 @@
 import Game from './game.js';
+import { placePieceOnBoard } from './utils.js';
 /* global socket */
 
 class MultiMode {
@@ -41,7 +42,6 @@ class MultiMode {
       this.options.flip.classList.remove("hidden");
       this.game = new Game(this.options.boardNode, this.options.pieces, data);
       this.game.play();
-      console.log(this.game);
     });
   }
 
@@ -65,10 +65,6 @@ class MultiMode {
     });
   }
 
-  resetUIShow() {
-
-  }
-
   mainBtnHandler() {
     if (this.ready) {
       socket.emit('cancelReady');
@@ -80,8 +76,16 @@ class MultiMode {
     this.ready = !this.ready;
   }
 
-  movePiece(action) {
+  wonHandler() {
+    // emit winning
 
+  }
+
+  movePiece(action) {
+    if (this.game && this.game.pickedPiece) {
+      this.game.movePickedPiece(action);
+      // emit the moved data
+    }
   }
 }
 

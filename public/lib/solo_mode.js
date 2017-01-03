@@ -57,19 +57,6 @@ class SoloMode {
     this.timer.stop();
     disableInteraction(this.game, true, this, 'Play');
   }
-
-  dropHandler(bCell, placeSound, wonSound) {
-    let game = this.game;
-    let pCell = game.pickedCell;
-    if (pCell) {
-      let pieceNode = pCell.parentNode.parentNode;
-      let pieceObject = game.pieceMap.get(pieceNode);
-      let won = placePieceOnBoard(pieceNode, pCell,
-        this.options.boardNode, bCell,
-        game.board, pieceObject, this);
-      if (won) { this.wonHandler(); }
-    }
-  }
 }
 
 export default SoloMode;

@@ -1,5 +1,5 @@
 const lengthOfColors = 11;
-const lengthOfGamePieces = 8;
+const lengthOfGamePieces = 2;
 const amountOfPieces = 12;
 const possibleIndexes = 8;
 
@@ -43,6 +43,7 @@ class GameState {
       pieces: [],
       shuffledOrder: []
     };
+    gameData.pieceNum = lengthOfGamePieces;
     gameData.color = Math.floor(Math.random() * lengthOfColors);
     for (let i=0; i<lengthOfGamePieces; i++) {
       gameData.pieces.push(Math.floor(Math.random() * amountOfPieces));

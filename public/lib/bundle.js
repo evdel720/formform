@@ -220,6 +220,7 @@
 	  if (board.isValid(pieceObject, topLeft)) {
 	    board.placePiece(pieceNode, topLeft);
 	    if (board.isWon()) {
+	      gameMode.options.wonSound.play();
 	      return true;
 	    } else {
 	      gameMode.options.placeSound.play();
@@ -230,8 +231,21 @@
 	var dropHandler = function dropHandler(gameMode, e) {
 	  e.preventDefault();
 	  var game = gameMode.game;
-	  if (e.target.parentNode.classList && e.target.parentNode.classList.contains("dropzone") && game && game.isPlaying) {
-	    gameMode.dropHandler(e.target);
+	  if (game && e.target.parentNode.classList && e.target.parentNode.classList.contains("dropzone") && game.isPlaying) {
+	    dropHelper(e.target, gameMode);
+	  }
+	};
+	
+	var dropHelper = function dropHelper(bCell, gameMode) {
+	  var game = gameMode.game;
+	  var pCell = game.pickedCell;
+	  if (pCell) {
+	    var pieceNode = pCell.parentNode.parentNode;
+	    var pieceObject = game.pieceMap.get(pieceNode);
+	    var won = placePieceOnBoard(pieceNode, pCell, gameMode.options.boardNode, bCell, game.board, pieceObject, gameMode);
+	    if (won) {
+	      gameMode.wonHandler();
+	    }
 	  }
 	};
 	
@@ -330,20 +344,6 @@
 	      this.timer.stop();
 	      (0, _utils.disableInteraction)(this.game, true, this, 'Play');
 	    }
-	  }, {
-	    key: 'dropHandler',
-	    value: function dropHandler(bCell, placeSound, wonSound) {
-	      var game = this.game;
-	      var pCell = game.pickedCell;
-	      if (pCell) {
-	        var pieceNode = pCell.parentNode.parentNode;
-	        var pieceObject = game.pieceMap.get(pieceNode);
-	        var won = (0, _utils.placePieceOnBoard)(pieceNode, pCell, this.options.boardNode, bCell, game.board, pieceObject, this);
-	        if (won) {
-	          this.wonHandler();
-	        }
-	      }
-	    }
 	  }]);
 	
 	  return SoloMode;
@@ -394,11 +394,12 @@
 	      color: undefined,
 	      pieces: [],
 	      shuffledOrder: [],
-	      firstP: undefined
+	      firstP: undefined,
+	      pieceNum: undefined
 	    };
 	    if (multiData) {
 	      this.multiData = multiData;
-	      this.pieceNum = 8;
+	      this.pieceNum = multiData.pieceNum;
 	    }
 	  }
 	
@@ -997,6 +998,8 @@
 	
 	var _game2 = _interopRequireDefault(_game);
 	
+	var _utils = __webpack_require__(1);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1053,7 +1056,6 @@
 	        _this2.options.flip.classList.remove("hidden");
 	        _this2.game = new _game2.default(_this2.options.boardNode, _this2.options.pieces, data);
 	        _this2.game.play();
-	        console.log(_this2.game);
 	      });
 	    }
 	  }, {
@@ -1083,9 +1085,6 @@
 	      });
 	    }
 	  }, {
-	    key: 'resetUIShow',
-	    value: function resetUIShow() {}
-	  }, {
 	    key: 'mainBtnHandler',
 	    value: function mainBtnHandler() {
 	      if (this.ready) {
@@ -1098,8 +1097,19 @@
 	      this.ready = !this.ready;
 	    }
 	  }, {
+	    key: 'wonHandler',
+	    value: function wonHandler() {
+	      // emit winning
+	
+	    }
+	  }, {
 	    key: 'movePiece',
-	    value: function movePiece(action) {}
+	    value: function movePiece(action) {
+	      if (this.game && this.game.pickedPiece) {
+	        this.game.movePickedPiece(action);
+	        // emit the moved data
+	      }
+	    }
 	  }]);
 	
 	  return MultiMode;

@@ -18,11 +18,12 @@ class Game {
       color: undefined,
       pieces: [],
       shuffledOrder: [],
-      firstP: undefined
+      firstP: undefined,
+      pieceNum: undefined
     };
     if (multiData) {
       this.multiData = multiData;
-      this.pieceNum = 8;
+      this.pieceNum = multiData.pieceNum;
     }
   }
 

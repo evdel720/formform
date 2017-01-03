@@ -63,6 +63,7 @@ const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObjec
   if (board.isValid(pieceObject, topLeft)) {
     board.placePiece(pieceNode, topLeft);
     if (board.isWon()) {
+      gameMode.options.wonSound.play();
       return true;
     } else {
       gameMode.options.placeSound.play();
@@ -73,11 +74,24 @@ const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObjec
 const dropHandler = (gameMode, e) => {
   e.preventDefault();
   let game = gameMode.game;
-  if (e.target.parentNode.classList &&
+  if (game && e.target.parentNode.classList &&
       e.target.parentNode.classList.contains("dropzone") &&
-      game && game.isPlaying) {
-        gameMode.dropHandler(e.target);
-      }
+      game.isPlaying) {
+    dropHelper(e.target, gameMode);
+  }
+};
+
+const dropHelper = (bCell, gameMode) => {
+  let game = gameMode.game;
+  let pCell = game.pickedCell;
+  if (pCell) {
+    let pieceNode = pCell.parentNode.parentNode;
+    let pieceObject = game.pieceMap.get(pieceNode);
+    let won = placePieceOnBoard(pieceNode, pCell,
+      gameMode.options.boardNode, bCell,
+      game.board, pieceObject, gameMode);
+    if (won) { gameMode.wonHandler(); }
+  }
 };
 
 export { setLevelHandler, getGridNode, findLoc,
