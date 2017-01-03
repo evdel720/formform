@@ -5,7 +5,6 @@ import MultiMode from './multi_mode.js';
 /* global socket */
 
 document.addEventListener('DOMContentLoaded', () => {
-  let notification = document.getElementById('notification');
   let options = {
     board: document.getElementById('board'),
     pieces: document.getElementById('pieces'),
@@ -46,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameMode = roomId ? multi : solo;
   gameMode.enableUI();
   options.mode.addEventListener('click', () => {
+    if (gameMode.game) {
+      gameMode.game.clearBoard();
+    }
     if (gameMode.mode === 'solo') {
       gameMode = multi;
       socket.emit('newRoom');
@@ -57,12 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   options.main.addEventListener('click', () => {
-    if (gameMode.game.isPlaying) {
-      // common things for both
-      // when user clicks main button to start new game
-    } else {
-      options.instruction.classList.add("hidden");
-    }
+    options.instruction.classList.add("hidden");
     gameMode.mainBtnHandler();
   });
 

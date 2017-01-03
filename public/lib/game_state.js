@@ -1,3 +1,8 @@
+const lengthOfColors = 11;
+const lengthOfGamePieces = 8;
+const amountOfPieces = 12;
+const possibleIndexes = 8;
+
 class GameState {
   constructor(io, socket, roomId) {
     this.io = io;
@@ -22,6 +27,7 @@ class GameState {
   disconnectAction(socket) {
     if (this.sockets.get(socket.id)) {
       socket.leave(this.roomId);
+      this.playersReady.delete(socket.id);
       this.sockets.delete(socket.id);
       this.io.to(this.roomId).emit('opponentDisconnected');
       if (this.isPlaying) {
@@ -32,11 +38,27 @@ class GameState {
     }
   }
 
+  buildNewGame() {
+    const gameData = {
+      pieces: [],
+      shuffledOrder: []
+    };
+    gameData.color = Math.floor(Math.random() * lengthOfColors);
+    for (let i=0; i<lengthOfGamePieces; i++) {
+      gameData.pieces.push(Math.floor(Math.random() * amountOfPieces));
+      gameData.shuffledOrder.push(Math.floor(Math.random() * lengthOfGamePieces));
+    }
+    gameData.firstP = Math.floor(Math.random() * possibleIndexes);
+    return gameData;
+  }
+
   setUpReady(socket) {
     socket.on('ready', () => {
       this.playersReady.set(socket.id, true);
+      console.log(this.playersReady);
       if (this.playersReady.size === 2) {
-        this.io.to(this.roomId).emit("newGame", 'piecedata');
+        let gameData = this.buildNewGame();
+        this.io.to(this.roomId).emit("newGame", gameData);
       }
     });
     socket.on('cancelReady', () => {

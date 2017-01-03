@@ -61,7 +61,6 @@
 	/* global socket */
 	
 	document.addEventListener('DOMContentLoaded', function () {
-	  var notification = document.getElementById('notification');
 	  var options = {
 	    board: document.getElementById('board'),
 	    pieces: document.getElementById('pieces'),
@@ -102,6 +101,9 @@
 	  var gameMode = roomId ? multi : solo;
 	  gameMode.enableUI();
 	  options.mode.addEventListener('click', function () {
+	    if (gameMode.game) {
+	      gameMode.game.clearBoard();
+	    }
 	    if (gameMode.mode === 'solo') {
 	      gameMode = multi;
 	      socket.emit('newRoom');
@@ -113,12 +115,7 @@
 	  });
 	
 	  options.main.addEventListener('click', function () {
-	    if (gameMode.game.isPlaying) {
-	      // common things for both
-	      // when user clicks main button to start new game
-	    } else {
-	      options.instruction.classList.add("hidden");
-	    }
+	    options.instruction.classList.add("hidden");
 	    gameMode.mainBtnHandler();
 	  });
 	
@@ -284,6 +281,7 @@
 	  _createClass(SoloMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
+	      this.game.clearBoard();
 	      window.history.replaceState({}, '', window.location.origin);
 	      this.options.rotate.classList.add('hidden');
 	      this.options.flip.classList.add('hidden');
@@ -380,7 +378,7 @@
 	var colors = ['rgb(162, 72, 151)', 'rgb(238, 89, 139)', 'rgb(126, 205, 199)', 'rgb(34, 193, 228)', 'rgb(45, 49, 108)', 'rgb(246, 180, 205)', 'rgb(245, 143, 51)', 'rgb(226, 35, 63)', 'rgb(250, 235, 62)', 'rgb(189, 214, 93)', 'rgb(241, 122, 128)'];
 	
 	var Game = function () {
-	  function Game($boardNode, $pieces) {
+	  function Game($boardNode, $pieces, multiData) {
 	    _classCallCheck(this, Game);
 	
 	    this.$boardNode = $boardNode;
@@ -392,6 +390,16 @@
 	    this.pickedPiece = undefined;
 	    this.pickedCell = undefined;
 	    this.isPlaying = false;
+	    this.multiData = {
+	      color: undefined,
+	      pieces: [],
+	      shuffledOrder: [],
+	      firstP: undefined
+	    };
+	    if (multiData) {
+	      this.multiData = multiData;
+	      this.pieceNum = 8;
+	    }
 	  }
 	
 	  _createClass(Game, [{
@@ -413,7 +421,7 @@
 	      this.clearBoard();
 	      this.isPlaying = true;
 	      this.generatePieceMap(this.generateRandomPieces());
-	      this.board = new _board2.default(this.pieceMap, this.$boardNode);
+	      this.board = new _board2.default(this.pieceMap, this.$boardNode, this.multiData);
 	      this.renderBoard();
 	    }
 	  }, {
@@ -438,9 +446,9 @@
 	    key: 'generateRandomPieces',
 	    value: function generateRandomPieces() {
 	      var res = [];
-	      var colorIdx = Math.floor(Math.random() * colors.length);
+	      var colorIdx = this.multiData.color || Math.floor(Math.random() * colors.length);
 	      for (var i = 0; i < this.pieceNum; i++) {
-	        var p = new _piece2.default();
+	        var p = new _piece2.default(this.multiData.pieces[i]);
 	        p.color = colors[(colorIdx + i) % colors.length];
 	        res.push(p);
 	      }
@@ -543,9 +551,10 @@
 	var neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 	
 	var Board = function () {
-	  function Board(pieceMap, $boardNode) {
+	  function Board(pieceMap, $boardNode, multiData) {
 	    _classCallCheck(this, Board);
 	
+	    this.multiData = multiData;
 	    this.piecesObjects = Array.from(pieceMap.values());
 	    this.pieceMap = pieceMap;
 	    this.$boardNode = $boardNode;
@@ -663,7 +672,11 @@
 	        return p;
 	      });
 	      for (var i = 0; i < result.length; i++) {
-	        var j = Math.floor(Math.random() * result.length);
+	        var randomIdx = this.multiData.shuffledOrder[i];
+	        if (randomIdx === undefined) {
+	          randomIdx = Math.floor(Math.random() * result.length);
+	        }
+	        var j = randomIdx;
 	        var _ref = [result[j], result[i]];
 	        result[i] = _ref[0];
 	        result[j] = _ref[1];
@@ -675,14 +688,14 @@
 	    value: function generateBoard() {
 	      var _this2 = this;
 	
-	      // TODO more randomize!!
 	      var shuffledPieces = this.shuffledPieces();
 	      var board = this.$boardNode.map(function (row) {
 	        return row.map(function (cell) {
 	          return 0;
 	        });
 	      });
-	      var firstP = shuffledPieces.pop().piecesArr[Math.floor(Math.random() * 8)];
+	      var randomIdx = this.multiData.firstP === undefined ? Math.floor(Math.random() * 8) : this.multiData.firstP;
+	      var firstP = shuffledPieces.pop().piecesArr[randomIdx];
 	      // start at the middle
 	      var i = Math.floor((board.length - firstP.length) / 2);
 	      var j = Math.floor((board[0].length - firstP[0].length) / 2);
@@ -791,10 +804,13 @@
 	
 	
 	var Piece = function () {
-	  function Piece(i) {
+	  function Piece(idx) {
 	    _classCallCheck(this, Piece);
 	
 	    var randomPiece = _piece_array2.default[Math.floor(Math.random() * _piece_array2.default.length)];
+	    if (idx !== undefined) {
+	      randomPiece = _piece_array2.default[idx];
+	    }
 	    this.piecesArr = randomPiece.piecesArr;
 	    this.possibleIndexes = randomPiece.possibleIndexes;
 	    this.idx = 0;
@@ -975,19 +991,11 @@
 	  value: true
 	});
 	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // idea: generate game with extra hard mode(8 pc)
-	// instantiate two players who has game object
-	// instantiate one game and copy the game to make the same one
-	// each player has game and board
-	// player class has the method to send signals to others
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _game = __webpack_require__(3);
 	
 	var _game2 = _interopRequireDefault(_game);
-	
-	var _player = __webpack_require__(9);
-	
-	var _player2 = _interopRequireDefault(_player);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -1002,8 +1010,7 @@
 	    this.mode = 'multi';
 	    this.options = options;
 	    this.ready = false;
-	    this.game = {};
-	    this.game.isPlaying = false;
+	    this.game = undefined;
 	  }
 	
 	  _createClass(MultiMode, [{
@@ -1013,10 +1020,8 @@
 	
 	      this.options.timer.classList.add('hidden');
 	      this.options.levels.classList.add('hidden');
-	      this.options.roomSet.classList.remove('hidden');
-	      this.options.main.innerText = "Ready";
 	      this.options.mode.innerText = "Solo";
-	      this.options.main.disabled = true;
+	      this.initialUI();
 	      this.setLink();
 	      socket.on("matchSuccess", function () {
 	        _this.options.roomSet.classList.add('hidden');
@@ -1025,6 +1030,16 @@
 	        _this.setUpDisconnect();
 	        _this.setUpNewGame();
 	      });
+	    }
+	  }, {
+	    key: 'initialUI',
+	    value: function initialUI() {
+	      this.options.main.innerText = 'Ready';
+	      this.options.roomSet.classList.remove('hidden');
+	      this.options.opponent.classList.add('hidden');
+	      this.options.rotate.classList.add('hidden');
+	      this.options.flip.classList.add('hidden');
+	      this.options.main.disabled = true;
 	    }
 	  }, {
 	    key: 'setUpNewGame',
@@ -1036,8 +1051,9 @@
 	        _this2.options.main.innerText = 'Quit';
 	        _this2.options.rotate.classList.remove("hidden");
 	        _this2.options.flip.classList.remove("hidden");
-	        console.log(data);
-	        console.log('new game set!');
+	        _this2.game = new _game2.default(_this2.options.boardNode, _this2.options.pieces, data);
+	        _this2.game.play();
+	        console.log(_this2.game);
 	      });
 	    }
 	  }, {
@@ -1047,11 +1063,12 @@
 	
 	      socket.on("opponentDisconnected", function () {
 	        window.alert("Your opponent is disconnected.");
-	        _this3.options.roomSet.classList.remove('hidden');
-	        _this3.options.opponent.classList.add('hidden');
-	        _this3.options.rotate.classList.add('hidden');
-	        _this3.options.flip.classList.add('hidden');
-	        _this3.options.main.disabled = true;
+	        _this3.initialUI();
+	        _this3.mainBtnHandler();
+	        if (_this3.game) {
+	          _this3.game.clearBoard();
+	          _this3.game = undefined;
+	        }
 	      });
 	    }
 	  }, {
@@ -1073,11 +1090,12 @@
 	    value: function mainBtnHandler() {
 	      if (this.ready) {
 	        socket.emit('cancelReady');
+	        this.options.main.classList.remove("ready");
 	      } else {
 	        socket.emit('ready');
+	        this.options.main.classList.add("ready");
 	      }
 	      this.ready = !this.ready;
-	      this.options.main.classList.toggle("ready");
 	    }
 	  }, {
 	    key: 'movePiece',
@@ -1088,30 +1106,6 @@
 	}();
 	
 	exports.default = MultiMode;
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _game = __webpack_require__(3);
-	
-	var _game2 = _interopRequireDefault(_game);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Player = function Player() {
-	  _classCallCheck(this, Player);
-	};
-	
-	exports.default = Player;
 
 /***/ }
 /******/ ]);

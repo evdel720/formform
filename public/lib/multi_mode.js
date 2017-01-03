@@ -1,11 +1,4 @@
-// idea: generate game with extra hard mode(8 pc)
-// instantiate two players who has game object
-// instantiate one game and copy the game to make the same one
-// each player has game and board
-// player class has the method to send signals to others
-
 import Game from './game.js';
-import Player from './player.js';
 /* global socket */
 
 class MultiMode {
@@ -13,17 +6,14 @@ class MultiMode {
     this.mode = 'multi';
     this.options = options;
     this.ready = false;
-    this.game = {};
-    this.game.isPlaying = false;
+    this.game = undefined;
   }
 
   enableUI() {
     this.options.timer.classList.add('hidden');
     this.options.levels.classList.add('hidden');
-    this.options.roomSet.classList.remove('hidden');
-    this.options.main.innerText = "Ready";
     this.options.mode.innerText = "Solo";
-    this.options.main.disabled = true;
+    this.initialUI();
     this.setLink();
     socket.on("matchSuccess", () => {
       this.options.roomSet.classList.add('hidden');
@@ -34,25 +24,36 @@ class MultiMode {
     });
   }
 
+  initialUI() {
+    this.options.main.innerText = 'Ready';
+    this.options.roomSet.classList.remove('hidden');
+    this.options.opponent.classList.add('hidden');
+    this.options.rotate.classList.add('hidden');
+    this.options.flip.classList.add('hidden');
+    this.options.main.disabled = true;
+  }
+
   setUpNewGame() {
     socket.on("newGame", (data) => {
       this.options.main.classList.remove('ready');
       this.options.main.innerText = 'Quit';
       this.options.rotate.classList.remove("hidden");
       this.options.flip.classList.remove("hidden");
-      console.log(data);
-      console.log('new game set!');
+      this.game = new Game(this.options.boardNode, this.options.pieces, data);
+      this.game.play();
+      console.log(this.game);
     });
   }
 
   setUpDisconnect() {
     socket.on("opponentDisconnected", () => {
       window.alert("Your opponent is disconnected.");
-      this.options.roomSet.classList.remove('hidden');
-      this.options.opponent.classList.add('hidden');
-      this.options.rotate.classList.add('hidden');
-      this.options.flip.classList.add('hidden');
-      this.options.main.disabled = true;
+      this.initialUI();
+      this.mainBtnHandler();
+      if (this.game) {
+        this.game.clearBoard();
+        this.game = undefined;
+      }
     });
   }
 
@@ -71,11 +72,12 @@ class MultiMode {
   mainBtnHandler() {
     if (this.ready) {
       socket.emit('cancelReady');
+      this.options.main.classList.remove("ready");
     } else {
       socket.emit('ready');
+      this.options.main.classList.add("ready");
     }
     this.ready = !this.ready;
-    this.options.main.classList.toggle("ready");
   }
 
   movePiece(action) {

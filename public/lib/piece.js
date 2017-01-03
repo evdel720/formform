@@ -3,8 +3,11 @@ import pieces from './piece_array.js';
 
 
 class Piece {
-  constructor(i) {
+  constructor(idx) {
     let randomPiece = pieces[Math.floor(Math.random() * pieces.length)];
+    if (idx !== undefined) {
+      randomPiece = pieces[idx];
+    }
     this.piecesArr = randomPiece.piecesArr;
     this.possibleIndexes = randomPiece.possibleIndexes;
     this.idx = 0;

@@ -12,6 +12,7 @@ class SoloMode {
   }
 
   enableUI() {
+    this.game.clearBoard();
     window.history.replaceState({}, '', window.location.origin);
     this.options.rotate.classList.add('hidden');
     this.options.flip.classList.add('hidden');

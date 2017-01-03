@@ -4,7 +4,7 @@ import Piece from './piece.js';
 const colors = ['rgb(162, 72, 151)', 'rgb(238, 89, 139)', 'rgb(126, 205, 199)', 'rgb(34, 193, 228)', 'rgb(45, 49, 108)', 'rgb(246, 180, 205)', 'rgb(245, 143, 51)', 'rgb(226, 35, 63)', 'rgb(250, 235, 62)', 'rgb(189, 214, 93)', 'rgb(241, 122, 128)'];
 
 class Game {
-  constructor($boardNode, $pieces) {
+  constructor($boardNode, $pieces, multiData) {
     this.$boardNode = $boardNode;
     this.$pieces = $pieces;
     this.pieceNum = 4;
@@ -14,6 +14,16 @@ class Game {
     this.pickedPiece = undefined;
     this.pickedCell = undefined;
     this.isPlaying = false;
+    this.multiData = {
+      color: undefined,
+      pieces: [],
+      shuffledOrder: [],
+      firstP: undefined
+    };
+    if (multiData) {
+      this.multiData = multiData;
+      this.pieceNum = 8;
+    }
   }
 
   clearBoard() {
@@ -32,7 +42,7 @@ class Game {
     this.clearBoard();
     this.isPlaying = true;
     this.generatePieceMap(this.generateRandomPieces());
-    this.board = new Board(this.pieceMap, this.$boardNode);
+    this.board = new Board(this.pieceMap, this.$boardNode, this.multiData);
     this.renderBoard();
   }
 
@@ -53,9 +63,9 @@ class Game {
 
   generateRandomPieces() {
     let res = [];
-    let colorIdx = Math.floor(Math.random() * colors.length);
+    let colorIdx = this.multiData.color || Math.floor(Math.random() * colors.length);
     for (let i=0; i<this.pieceNum; i++) {
-      let p = new Piece();
+      let p = new Piece(this.multiData.pieces[i]);
       p.color = colors[(colorIdx + i) % colors.length];
       res.push(p);
     }

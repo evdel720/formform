@@ -1,7 +1,8 @@
 const neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 class Board {
-  constructor(pieceMap, $boardNode) {
+  constructor(pieceMap, $boardNode, multiData) {
+    this.multiData = multiData;
     this.piecesObjects = Array.from(pieceMap.values());
     this.pieceMap = pieceMap;
     this.$boardNode = $boardNode;
@@ -103,17 +104,21 @@ class Board {
     // shuffles the pieces
     const result = this.piecesObjects.map((p) => p);
     for (let i=0; i<result.length; i++) {
-      let j = Math.floor(Math.random() * result.length);
+      let randomIdx = this.multiData.shuffledOrder[i];
+      if (randomIdx === undefined) {
+        randomIdx = Math.floor(Math.random() * result.length);
+      }
+      let j =  randomIdx;
       [result[i], result[j]] = [result[j], result[i]];
     }
     return result;
   }
 
   generateBoard() {
-    // TODO more randomize!!
     let shuffledPieces = this.shuffledPieces();
     let board = this.$boardNode.map((row) => row.map((cell) => 0));
-    let firstP = shuffledPieces.pop().piecesArr[Math.floor(Math.random() * 8)];
+    let randomIdx = this.multiData.firstP === undefined ? Math.floor(Math.random() * 8) : this.multiData.firstP;
+    let firstP = shuffledPieces.pop().piecesArr[randomIdx];
     // start at the middle
     let i = Math.floor((board.length - firstP.length) / 2);
     let j = Math.floor((board[0].length - firstP[0].length) / 2);
