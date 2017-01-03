@@ -40,7 +40,7 @@ class MultiMode {
       this.options.main.innerText = 'Quit';
       this.options.rotate.classList.remove("hidden");
       this.options.flip.classList.remove("hidden");
-      this.game = new Game(this.options.boardNode, this.options.pieces, data);
+      this.game = new Game(this.options.boardNode, this.options.pieces, data, this);
       this.game.play();
     });
   }
@@ -76,16 +76,13 @@ class MultiMode {
     this.ready = !this.ready;
   }
 
+  boardChangeHandler() {
+    socket.emit('boardChanged', 'changed!');
+  }
+
   wonHandler() {
     // emit winning
 
-  }
-
-  movePiece(action) {
-    if (this.game && this.game.pickedPiece) {
-      this.game.movePickedPiece(action);
-      // emit the moved data
-    }
   }
 }
 

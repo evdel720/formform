@@ -123,12 +123,16 @@
 	    (0, _utils.setLevelHandler)(gameMode, li, idx);
 	  });
 	
-	  document.addEventListener('drop', _utils.dropHandler.bind(null, gameMode));
+	  document.addEventListener('drop', function (e) {
+	    (0, _utils.dropHandler)(gameMode, e);
+	  });
 	
 	  [options.rotate, options.flip].forEach(function (btn) {
 	    btn.addEventListener('click', function (e) {
 	      e.preventDefault();
-	      gameMode.movePiece(btn.id);
+	      if (gameMode.game && gameMode.game.pickedPiece) {
+	        gameMode.game.movePickedPiece(btn.id);
+	      }
 	    });
 	  });
 	
@@ -219,6 +223,9 @@
 	  var topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
 	  if (board.isValid(pieceObject, topLeft)) {
 	    board.placePiece(pieceNode, topLeft);
+	    if (gameMode.mode === 'multi') {
+	      gameMode.boardChangeHandler();
+	    }
 	    if (board.isWon()) {
 	      gameMode.options.wonSound.play();
 	      return true;
@@ -325,13 +332,6 @@
 	      }
 	    }
 	  }, {
-	    key: 'movePiece',
-	    value: function movePiece(action) {
-	      if (this.game.pickedPiece) {
-	        this.game.movePickedPiece(action);
-	      }
-	    }
-	  }, {
 	    key: 'resetUIShow',
 	    value: function resetUIShow() {
 	      this.options.timer.classList.add('hidden');
@@ -378,29 +378,26 @@
 	var colors = ['rgb(162, 72, 151)', 'rgb(238, 89, 139)', 'rgb(126, 205, 199)', 'rgb(34, 193, 228)', 'rgb(45, 49, 108)', 'rgb(246, 180, 205)', 'rgb(245, 143, 51)', 'rgb(226, 35, 63)', 'rgb(250, 235, 62)', 'rgb(189, 214, 93)', 'rgb(241, 122, 128)'];
 	
 	var Game = function () {
-	  function Game($boardNode, $pieces, multiData) {
+	  function Game($boardNode, $pieces, multiData, gameMode) {
 	    _classCallCheck(this, Game);
 	
-	    this.$boardNode = $boardNode;
-	    this.$pieces = $pieces;
-	    this.pieceNum = 4;
-	    this.pieceSets = undefined;
-	    this.board = undefined;
-	    this.pieceMap = undefined;
-	    this.pickedPiece = undefined;
-	    this.pickedCell = undefined;
-	    this.isPlaying = false;
-	    this.multiData = {
+	    this.multiData = multiData || {
 	      color: undefined,
 	      pieces: [],
 	      shuffledOrder: [],
 	      firstP: undefined,
 	      pieceNum: undefined
 	    };
-	    if (multiData) {
-	      this.multiData = multiData;
-	      this.pieceNum = multiData.pieceNum;
-	    }
+	    this.$boardNode = $boardNode;
+	    this.$pieces = $pieces;
+	    this.pieceNum = this.multiData.pieceNum || 4;
+	    this.pieceSets = undefined;
+	    this.board = undefined;
+	    this.pieceMap = undefined;
+	    this.pickedPiece = undefined;
+	    this.pickedCell = undefined;
+	    this.isPlaying = false;
+	    this.gameMode = gameMode;
 	  }
 	
 	  _createClass(Game, [{
@@ -422,7 +419,7 @@
 	      this.clearBoard();
 	      this.isPlaying = true;
 	      this.generatePieceMap(this.generateRandomPieces());
-	      this.board = new _board2.default(this.pieceMap, this.$boardNode, this.multiData);
+	      this.board = new _board2.default(this.pieceMap, this.$boardNode, this.multiData, this.gameMode);
 	      this.renderBoard();
 	    }
 	  }, {
@@ -552,7 +549,7 @@
 	var neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 	
 	var Board = function () {
-	  function Board(pieceMap, $boardNode, multiData) {
+	  function Board(pieceMap, $boardNode, multiData, gameMode) {
 	    _classCallCheck(this, Board);
 	
 	    this.multiData = multiData;
@@ -561,6 +558,7 @@
 	    this.$boardNode = $boardNode;
 	    this.board = this.generateBoard();
 	    this.cellMap = new Map();
+	    this.gameMode = gameMode;
 	  }
 	
 	  _createClass(Board, [{
@@ -604,6 +602,9 @@
 	  }, {
 	    key: "placePiece",
 	    value: function placePiece(pieceNode, loc) {
+	      if (this.gameMode) {
+	        this.gameMode.boardChangeHandler();
+	      }
 	      var pieceOb = this.pieceMap.get(pieceNode);
 	      var piece = pieceOb.currentPiece();
 	      for (var i = 0; i < piece.length; i++) {
@@ -649,6 +650,9 @@
 	
 	      if (this.isPlaying && e.target.classList.contains("placed-cell")) {
 	        (function () {
+	          if (_this.gameMode) {
+	            _this.gameMode.boardChangeHandler();
+	          }
 	          var pieceNode = _this.board.cellMap.get(e.target);
 	          pieceNode.classList.remove("hidden");
 	          _this.pieceMap.get(pieceNode).placed = false;
@@ -1054,7 +1058,7 @@
 	        _this2.options.main.innerText = 'Quit';
 	        _this2.options.rotate.classList.remove("hidden");
 	        _this2.options.flip.classList.remove("hidden");
-	        _this2.game = new _game2.default(_this2.options.boardNode, _this2.options.pieces, data);
+	        _this2.game = new _game2.default(_this2.options.boardNode, _this2.options.pieces, data, _this2);
 	        _this2.game.play();
 	      });
 	    }
@@ -1097,18 +1101,15 @@
 	      this.ready = !this.ready;
 	    }
 	  }, {
+	    key: 'boardChangeHandler',
+	    value: function boardChangeHandler() {
+	      socket.emit('boardChanged', 'changed!');
+	    }
+	  }, {
 	    key: 'wonHandler',
 	    value: function wonHandler() {
 	      // emit winning
 	
-	    }
-	  }, {
-	    key: 'movePiece',
-	    value: function movePiece(action) {
-	      if (this.game && this.game.pickedPiece) {
-	        this.game.movePickedPiece(action);
-	        // emit the moved data
-	      }
 	    }
 	  }]);
 	

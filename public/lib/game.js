@@ -4,27 +4,24 @@ import Piece from './piece.js';
 const colors = ['rgb(162, 72, 151)', 'rgb(238, 89, 139)', 'rgb(126, 205, 199)', 'rgb(34, 193, 228)', 'rgb(45, 49, 108)', 'rgb(246, 180, 205)', 'rgb(245, 143, 51)', 'rgb(226, 35, 63)', 'rgb(250, 235, 62)', 'rgb(189, 214, 93)', 'rgb(241, 122, 128)'];
 
 class Game {
-  constructor($boardNode, $pieces, multiData) {
-    this.$boardNode = $boardNode;
-    this.$pieces = $pieces;
-    this.pieceNum = 4;
-    this.pieceSets = undefined;
-    this.board = undefined;
-    this.pieceMap = undefined;
-    this.pickedPiece = undefined;
-    this.pickedCell = undefined;
-    this.isPlaying = false;
-    this.multiData = {
+  constructor($boardNode, $pieces, multiData, gameMode) {
+    this.multiData = multiData || {
       color: undefined,
       pieces: [],
       shuffledOrder: [],
       firstP: undefined,
       pieceNum: undefined
     };
-    if (multiData) {
-      this.multiData = multiData;
-      this.pieceNum = multiData.pieceNum;
-    }
+    this.$boardNode = $boardNode;
+    this.$pieces = $pieces;
+    this.pieceNum = this.multiData.pieceNum || 4;
+    this.pieceSets = undefined;
+    this.board = undefined;
+    this.pieceMap = undefined;
+    this.pickedPiece = undefined;
+    this.pickedCell = undefined;
+    this.isPlaying = false;
+    this.gameMode = gameMode;
   }
 
   clearBoard() {
@@ -43,7 +40,7 @@ class Game {
     this.clearBoard();
     this.isPlaying = true;
     this.generatePieceMap(this.generateRandomPieces());
-    this.board = new Board(this.pieceMap, this.$boardNode, this.multiData);
+    this.board = new Board(this.pieceMap, this.$boardNode, this.multiData, this.gameMode);
     this.renderBoard();
   }
 

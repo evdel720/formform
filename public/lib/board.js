@@ -1,13 +1,14 @@
 const neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 class Board {
-  constructor(pieceMap, $boardNode, multiData) {
+  constructor(pieceMap, $boardNode, multiData, gameMode) {
     this.multiData = multiData;
     this.piecesObjects = Array.from(pieceMap.values());
     this.pieceMap = pieceMap;
     this.$boardNode = $boardNode;
     this.board = this.generateBoard();
     this.cellMap = new Map();
+    this.gameMode = gameMode;
   }
 
   isWon() {
@@ -45,6 +46,9 @@ class Board {
   }
 
   placePiece(pieceNode, loc) {
+    if (this.gameMode) {
+      this.gameMode.boardChangeHandler();
+    }
     let pieceOb = this.pieceMap.get(pieceNode);
     let piece = pieceOb.currentPiece();
     for (let i=0; i<piece.length; i++) {
@@ -84,6 +88,9 @@ class Board {
 
   removePiece(e) {
     if (this.isPlaying && e.target.classList.contains("placed-cell")) {
+      if (this.gameMode) {
+        this.gameMode.boardChangeHandler();
+      }
       let pieceNode = this.board.cellMap.get(e.target);
       pieceNode.classList.remove("hidden");
       this.pieceMap.get(pieceNode).placed = false;

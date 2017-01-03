@@ -20,8 +20,15 @@ class GameState {
       socket.join(this.roomId);
       this.setUpDisconnect(socket);
       this.setUpReady(socket);
+      this.setUpBoardChange(socket);
       return true;
     }
+  }
+
+  setUpBoardChange(socket) {
+    socket.on("boardChanged", (data) => {
+      console.log(data);
+    });
   }
 
   disconnectAction(socket) {
@@ -56,7 +63,6 @@ class GameState {
   setUpReady(socket) {
     socket.on('ready', () => {
       this.playersReady.set(socket.id, true);
-      console.log(this.playersReady);
       if (this.playersReady.size === 2) {
         let gameData = this.buildNewGame();
         this.io.to(this.roomId).emit("newGame", gameData);

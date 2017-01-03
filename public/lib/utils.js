@@ -62,6 +62,9 @@ const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObjec
   let topLeft = [bLoc[0] - pLoc[0], bLoc[1] - pLoc[1]];
   if (board.isValid(pieceObject, topLeft)) {
     board.placePiece(pieceNode, topLeft);
+    if (gameMode.mode === 'multi') {
+      gameMode.boardChangeHandler();
+    }
     if (board.isWon()) {
       gameMode.options.wonSound.play();
       return true;

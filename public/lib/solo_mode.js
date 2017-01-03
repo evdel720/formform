@@ -41,12 +41,6 @@ class SoloMode {
     }
   }
 
-  movePiece(action) {
-    if (this.game.pickedPiece) {
-      this.game.movePickedPiece(action);
-    }
-  }
-
   resetUIShow() {
     this.options.timer.classList.add('hidden');
     this.options.levels.classList.remove('hidden');

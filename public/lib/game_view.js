@@ -45,9 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameMode = roomId ? multi : solo;
   gameMode.enableUI();
   options.mode.addEventListener('click', () => {
-    if (gameMode.game) {
-      gameMode.game.clearBoard();
-    }
+    if (gameMode.game) { gameMode.game.clearBoard(); }
     if (gameMode.mode === 'solo') {
       gameMode = multi;
       socket.emit('newRoom');
@@ -67,12 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setLevelHandler(gameMode, li, idx);
   });
 
-  document.addEventListener('drop', dropHandler.bind(null, gameMode));
+  document.addEventListener('drop', (e) => {
+    dropHandler(gameMode, e);
+  });
 
   [options.rotate, options.flip].forEach((btn) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      gameMode.movePiece(btn.id);
+      if (gameMode.game && gameMode.game.pickedPiece) {
+        gameMode.game.movePickedPiece(btn.id);
+      }
     });
   });
 
