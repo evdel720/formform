@@ -38,7 +38,6 @@ const disableInteraction = (game, isWin, gameMode, mainText) => {
   changeToGray('#pieces li.filled');
   gameMode.options.rotate.classList.add('hidden');
   gameMode.options.flip.classList.add('hidden');
-  gameMode.options.mode.classList.remove('hidden');
 
   document.querySelectorAll('#pieces > *').forEach((piece) => {
     piece.style.cursor = "default";

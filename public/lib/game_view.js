@@ -61,10 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameMode.mainBtnHandler();
   });
 
-  Array.from(options.levels.children).forEach((li, idx) => {
-    setLevelHandler(gameMode, li, idx);
-  });
-
   document.addEventListener('drop', (e) => {
     dropHandler(gameMode, e);
   });

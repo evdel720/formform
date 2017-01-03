@@ -10,7 +10,6 @@ app.use(express.static('public'));
 const allRooms = new Map();
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
   socket.on('newRoom', () => {
     let roomId = crypto.randomBytes(5).toString('hex');
     while (allRooms.get(roomId)) {
@@ -27,8 +26,9 @@ io.on('connection', (socket) => {
       socket.emit('failure', "Can't find the room. Please check the room ID.");
     } else {
       let joinSuccess = gameState.addSocket(socket);
-      if (joinSuccess) {
+      if (joinSuccess < 2) {
         socket.emit('setLink', roomId);
+      } else if (joinSuccess === 2) {
         io.to(roomId).emit('matchSuccess');
       } else {
         socket.emit('failure', "The room is currently full.");

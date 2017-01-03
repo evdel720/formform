@@ -119,10 +119,6 @@
 	    gameMode.mainBtnHandler();
 	  });
 	
-	  Array.from(options.levels.children).forEach(function (li, idx) {
-	    (0, _utils.setLevelHandler)(gameMode, li, idx);
-	  });
-	
 	  document.addEventListener('drop', function (e) {
 	    (0, _utils.dropHandler)(gameMode, e);
 	  });
@@ -199,7 +195,6 @@
 	  changeToGray('#pieces li.filled');
 	  gameMode.options.rotate.classList.add('hidden');
 	  gameMode.options.flip.classList.add('hidden');
-	  gameMode.options.mode.classList.remove('hidden');
 	
 	  document.querySelectorAll('#pieces > *').forEach(function (piece) {
 	    piece.style.cursor = "default";
@@ -302,8 +297,11 @@
 	  _createClass(SoloMode, [{
 	    key: 'enableUI',
 	    value: function enableUI() {
+	      var _this = this;
+	
 	      this.game.clearBoard();
 	      window.history.replaceState({}, '', window.location.origin);
+	      this.options.opponent.classList.add('hidden');
 	      this.options.rotate.classList.add('hidden');
 	      this.options.flip.classList.add('hidden');
 	      this.options.main.classList.remove("ready");
@@ -312,6 +310,9 @@
 	      this.options.main.innerText = "Play";
 	      this.options.levels.classList.remove("hidden");
 	      this.options.roomSet.classList.add('hidden');
+	      Array.from(this.options.levels.children).forEach(function (li, idx) {
+	        (0, _utils.setLevelHandler)(_this, li, idx);
+	      });
 	    }
 	  }, {
 	    key: 'mainBtnHandler',
@@ -319,6 +320,7 @@
 	      if (this.game.isPlaying) {
 	        this.game.clearBoard();
 	        this.timer.stop();
+	        this.options.mode.classList.remove('hidden');
 	        (0, _utils.disableInteraction)(this.game, false, this, 'Play');
 	      } else {
 	        this.options.rotate.classList.remove("hidden");
@@ -342,6 +344,7 @@
 	    value: function wonHandler() {
 	      this.options.wonSound.play();
 	      this.timer.stop();
+	      this.options.mode.classList.remove('hidden');
 	      (0, _utils.disableInteraction)(this.game, true, this, 'Play');
 	    }
 	  }]);
@@ -1018,6 +1021,7 @@
 	    this.options = options;
 	    this.ready = false;
 	    this.game = undefined;
+	    this.opponentBoardNode = (0, _utils.getGridNode)(options.opponent);
 	  }
 	
 	  _createClass(MultiMode, [{
@@ -1041,13 +1045,29 @@
 	      });
 	    }
 	  }, {
+	    key: 'updateOpponentBoard',
+	    value: function updateOpponentBoard(data) {
+	      for (var i = 0; i < data.length; i++) {
+	        for (var j = 0; j < data[0].length; j++) {
+	          var status = void 0;
+	          if (data[i][j] === 0) {
+	            status = '';
+	          } else if (data[i][j] === 1) {
+	            status = 'cell';
+	          } else {
+	            status = 'filled';
+	          }
+	          this.opponentBoardNode[i][j].setAttribute('class', status);
+	        }
+	      }
+	    }
+	  }, {
 	    key: 'setUpOpponentBoard',
 	    value: function setUpOpponentBoard() {
 	      var _this2 = this;
 	
 	      socket.on("sendBoardData", function (data) {
-	        _this2.opponentBoard = data;
-	        // update board!
+	        _this2.updateOpponentBoard(data);
 	      });
 	    }
 	  }, {
@@ -1059,7 +1079,6 @@
 	      this.options.rotate.classList.add('hidden');
 	      this.options.flip.classList.add('hidden');
 	      this.options.main.disabled = true;
-	      this.opponentBoard = undefined;
 	    }
 	  }, {
 	    key: 'setUpNewGame',
@@ -1068,11 +1087,21 @@
 	
 	      socket.on("newGame", function (data) {
 	        _this3.options.main.classList.remove('ready');
-	        _this3.options.main.innerText = 'Quit';
+	        _this3.options.main.innerText = 'Concede';
 	        _this3.options.rotate.classList.remove("hidden");
 	        _this3.options.flip.classList.remove("hidden");
 	        _this3.game = new _game2.default(_this3.options.boardNode, _this3.options.pieces, data, _this3);
 	        _this3.game.play();
+	        _this3.updateOpponentBoard(_this3.game.board.board);
+	      });
+	    }
+	  }, {
+	    key: 'clearOpponentBoard',
+	    value: function clearOpponentBoard() {
+	      this.opponentBoardNode.forEach(function (row) {
+	        row.forEach(function (cell) {
+	          cell.removeAttribute('class');
+	        });
 	      });
 	    }
 	  }, {
@@ -1083,7 +1112,8 @@
 	      socket.on("opponentDisconnected", function () {
 	        window.alert("Your opponent is disconnected.");
 	        _this4.initialUI();
-	        _this4.mainBtnHandler();
+	        _this4.ready = false;_this4.options.main.classList.remove("ready");
+	        _this4.clearOpponentBoard();
 	        if (_this4.game) {
 	          _this4.game.clearBoard();
 	          _this4.game = undefined;
@@ -1119,22 +1149,24 @@
 	      socket.emit('boardChanged', this.game.board.board);
 	    }
 	  }, {
+	    key: 'resetUIShow',
+	    value: function resetUIShow() {}
+	  }, {
 	    key: 'lostHandler',
 	    value: function lostHandler() {
 	      var _this6 = this;
 	
 	      socket.on('lost', function () {
-	        console.log('lost');
-	        _this6.options.lostSound.play();
+	        _this6.ready = false;
+	        (0, _utils.disableInteraction)(_this6.game, false, _this6, 'Ready');
 	      });
 	    }
 	  }, {
 	    key: 'wonHandler',
 	    value: function wonHandler() {
-	      // emit winning
-	      // disable interaction for both of winning, losing
-	      console.log('won');
 	      socket.emit('won');
+	      this.ready = false;
+	      (0, _utils.disableInteraction)(this.game, true, this, 'Ready');
 	    }
 	  }]);
 	

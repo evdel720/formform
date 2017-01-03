@@ -1,5 +1,5 @@
 import Game from './game.js';
-import { placePieceOnBoard } from './utils.js';
+import { placePieceOnBoard, getGridNode, disableInteraction } from './utils.js';
 /* global socket */
 
 class MultiMode {
@@ -8,6 +8,7 @@ class MultiMode {
     this.options = options;
     this.ready = false;
     this.game = undefined;
+    this.opponentBoardNode = getGridNode(options.opponent);
   }
 
   enableUI() {
@@ -27,10 +28,25 @@ class MultiMode {
     });
   }
 
+  updateOpponentBoard(data) {
+    for (let i=0; i<data.length; i++) {
+      for (let j=0; j<data[0].length; j++) {
+        let status;
+        if (data[i][j] === 0) {
+          status = '';
+        } else if (data[i][j] === 1) {
+          status = 'cell';
+        } else {
+          status = 'filled';
+        }
+        this.opponentBoardNode[i][j].setAttribute('class', status);
+      }
+    }
+  }
+
   setUpOpponentBoard() {
     socket.on("sendBoardData", data => {
-      this.opponentBoard = data;
-      // update board!
+      this.updateOpponentBoard(data);
     });
   }
 
@@ -41,17 +57,25 @@ class MultiMode {
     this.options.rotate.classList.add('hidden');
     this.options.flip.classList.add('hidden');
     this.options.main.disabled = true;
-    this.opponentBoard = undefined;
   }
 
   setUpNewGame() {
     socket.on("newGame", (data) => {
       this.options.main.classList.remove('ready');
-      this.options.main.innerText = 'Quit';
+      this.options.main.innerText = 'Concede';
       this.options.rotate.classList.remove("hidden");
       this.options.flip.classList.remove("hidden");
       this.game = new Game(this.options.boardNode, this.options.pieces, data, this);
       this.game.play();
+      this.updateOpponentBoard(this.game.board.board);
+    });
+  }
+
+  clearOpponentBoard() {
+    this.opponentBoardNode.forEach((row) => {
+      row.forEach((cell) => {
+        cell.removeAttribute('class');
+      });
     });
   }
 
@@ -59,7 +83,8 @@ class MultiMode {
     socket.on("opponentDisconnected", () => {
       window.alert("Your opponent is disconnected.");
       this.initialUI();
-      this.mainBtnHandler();
+      this.ready = false;      this.options.main.classList.remove("ready");
+      this.clearOpponentBoard();
       if (this.game) {
         this.game.clearBoard();
         this.game = undefined;
@@ -90,18 +115,20 @@ class MultiMode {
     socket.emit('boardChanged', this.game.board.board);
   }
 
+  resetUIShow() {
+  }
+
   lostHandler() {
     socket.on('lost', () => {
-      console.log('lost');
-      this.options.lostSound.play();
+      this.ready = false;
+      disableInteraction(this.game, false, this, 'Ready');
     });
   }
 
   wonHandler() {
-    // emit winning
-    // disable interaction for both of winning, losing
-    console.log('won');
     socket.emit('won');
+    this.ready = false;
+    disableInteraction(this.game, true, this, 'Ready');
   }
 }
 

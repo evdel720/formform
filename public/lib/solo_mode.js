@@ -14,6 +14,7 @@ class SoloMode {
   enableUI() {
     this.game.clearBoard();
     window.history.replaceState({}, '', window.location.origin);
+    this.options.opponent.classList.add('hidden');
     this.options.rotate.classList.add('hidden');
     this.options.flip.classList.add('hidden');
     this.options.main.classList.remove("ready");
@@ -22,12 +23,16 @@ class SoloMode {
     this.options.main.innerText = "Play";
     this.options.levels.classList.remove("hidden");
     this.options.roomSet.classList.add('hidden');
+    Array.from(this.options.levels.children).forEach((li, idx) => {
+      setLevelHandler(this, li, idx);
+    });
   }
 
   mainBtnHandler() {
     if (this.game.isPlaying) {
       this.game.clearBoard();
       this.timer.stop();
+      this.options.mode.classList.remove('hidden');
       disableInteraction(this.game, false, this, 'Play');
     } else {
       this.options.rotate.classList.remove("hidden");
@@ -49,6 +54,7 @@ class SoloMode {
   wonHandler() {
     this.options.wonSound.play();
     this.timer.stop();
+    this.options.mode.classList.remove('hidden');
     disableInteraction(this.game, true, this, 'Play');
   }
 }

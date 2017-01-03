@@ -11,24 +11,24 @@ class GameState {
     this.sockets = new Map();
     this.playersReady = new Map();
     this.game = null;
-    this.isPlaying = false;
     this.addSocket(socket);
   }
 
   addSocket(socket) {
-    if (this.sockets.size < 2 && !this.isPlaying) {
+    if (this.sockets.size < 2) {
       this.sockets.set(socket.id, socket);
       socket.join(this.roomId);
       this.setUpDisconnect(socket);
       this.setUpReady(socket);
       this.setUpBoardChange(socket);
       this.setUpWin(socket);
-      return true;
     }
+    return this.sockets.size;
   }
 
   setUpWin(socket) {
     socket.on('won', () => {
+      this.playersReady = new Map();
       let opponent = this.opponents.get(socket.id);
       opponent.emit('lost');
     });
@@ -45,14 +45,9 @@ class GameState {
     if (this.sockets.get(socket.id)) {
       this.opponents = undefined;
       socket.leave(this.roomId);
-      this.playersReady.delete(socket.id);
+      this.playersReady = new Map();
       this.sockets.delete(socket.id);
       this.io.to(this.roomId).emit('opponentDisconnected');
-      if (this.isPlaying) {
-        this.isPlaying = false;
-        // stop the game
-        // get rid of the player
-      }
     }
   }
 

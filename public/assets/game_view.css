@@ -170,7 +170,7 @@ button:focus {
 
 #main, #mode {
   height: 50px;
-  width: 100px;
+  width: 110px;
   font-size: 25px;
   padding-top: 6px;
 }
@@ -229,4 +229,15 @@ button:focus {
 #opponent-board {
   margin-top: 20px;
   align-self: baseline;
+}
+
+#opponent-board ul li.cell {
+  transition: background-color 0.5s ease;
+  background-color: #006400;
+
+}
+
+#opponent-board ul li.filled {
+  transition: background-color 0.5s ease;
+  background-color: rgb(0, 128, 255);
 }
