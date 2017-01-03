@@ -23,8 +23,17 @@ class GameState {
       this.setUpReady(socket);
       this.setUpBoardChange(socket);
       this.setUpWin(socket);
+      this.setUpLose(socket);
     }
     return this.sockets.size;
+  }
+
+  setUpLose(socket) {
+    socket.on('lost', () => {
+      this.playersReady = new Map();
+      let opponent = this.opponents.get(socket.id);
+      opponent.emit('won');
+    });
   }
 
   setUpWin(socket) {

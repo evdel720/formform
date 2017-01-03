@@ -5,6 +5,7 @@ const io = require('socket.io')(server);
 const crypto = require('crypto');
 const GameState = require('./public/lib/game_state.js');
 /* global Map */
+const port = process.env.PORT || 3000;
 
 app.use(express.static('public'));
 
@@ -39,6 +40,6 @@ io.on('connection', (socket) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
+server.listen(port, () => {
+  console.log(`listening on *:${port}`);
 });

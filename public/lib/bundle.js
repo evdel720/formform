@@ -182,7 +182,9 @@
 	};
 	
 	var disableInteraction = function disableInteraction(game, isWin, gameMode, mainText) {
-	  if (!isWin) {
+	  if (isWin) {
+	    gameMode.options.wonSound.play();
+	  } else {
 	    gameMode.options.lostSound.play();
 	  }
 	  gameMode.options.main.innerText = mainText;
@@ -192,7 +194,7 @@
 	  }
 	
 	  changeToGray('#board li.filled', isWin);
-	  changeToGray('#pieces li.filled');
+	  changeToGray('#pieces li.filled', isWin);
 	  gameMode.options.rotate.classList.add('hidden');
 	  gameMode.options.flip.classList.add('hidden');
 	
@@ -222,7 +224,6 @@
 	      gameMode.boardChangeHandler();
 	    }
 	    if (board.isWon()) {
-	      gameMode.options.wonSound.play();
 	      return true;
 	    } else {
 	      gameMode.options.placeSound.play();
@@ -1041,7 +1042,8 @@
 	        _this.setUpDisconnect();
 	        _this.setUpNewGame();
 	        _this.setUpOpponentBoard();
-	        _this.lostHandler();
+	        _this.lostListener();
+	        _this.wonListener();
 	      });
 	    }
 	  }, {
@@ -1134,14 +1136,19 @@
 	  }, {
 	    key: 'mainBtnHandler',
 	    value: function mainBtnHandler() {
-	      if (this.ready) {
-	        socket.emit('cancelReady');
-	        this.options.main.classList.remove("ready");
+	      if (this.game && this.game.isPlaying) {
+	        this.scoreHelper(false);
+	        socket.emit('lost');
 	      } else {
-	        socket.emit('ready');
-	        this.options.main.classList.add("ready");
+	        if (this.ready) {
+	          socket.emit('cancelReady');
+	          this.options.main.classList.remove("ready");
+	        } else {
+	          socket.emit('ready');
+	          this.options.main.classList.add("ready");
+	        }
+	        this.ready = !this.ready;
 	      }
-	      this.ready = !this.ready;
 	    }
 	  }, {
 	    key: 'boardChangeHandler',
@@ -1152,21 +1159,34 @@
 	    key: 'resetUIShow',
 	    value: function resetUIShow() {}
 	  }, {
-	    key: 'lostHandler',
-	    value: function lostHandler() {
+	    key: 'scoreHelper',
+	    value: function scoreHelper(isWon) {
+	      this.ready = false;
+	      (0, _utils.disableInteraction)(this.game, isWon, this, 'Ready');
+	    }
+	  }, {
+	    key: 'lostListener',
+	    value: function lostListener() {
 	      var _this6 = this;
 	
 	      socket.on('lost', function () {
-	        _this6.ready = false;
-	        (0, _utils.disableInteraction)(_this6.game, false, _this6, 'Ready');
+	        _this6.scoreHelper(false);
+	      });
+	    }
+	  }, {
+	    key: 'wonListener',
+	    value: function wonListener() {
+	      var _this7 = this;
+	
+	      socket.on('won', function () {
+	        _this7.scoreHelper(true);
 	      });
 	    }
 	  }, {
 	    key: 'wonHandler',
 	    value: function wonHandler() {
+	      this.scoreHelper(true);
 	      socket.emit('won');
-	      this.ready = false;
-	      (0, _utils.disableInteraction)(this.game, true, this, 'Ready');
 	    }
 	  }]);
 	

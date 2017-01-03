@@ -25,7 +25,9 @@ const findLoc = (boardNode, cell) => {
 };
 
 const disableInteraction = (game, isWin, gameMode, mainText) => {
-  if (!isWin) {
+  if (isWin) {
+    gameMode.options.wonSound.play();
+  } else {
     gameMode.options.lostSound.play();
   }
   gameMode.options.main.innerText = mainText;
@@ -35,7 +37,7 @@ const disableInteraction = (game, isWin, gameMode, mainText) => {
   }
 
   changeToGray('#board li.filled', isWin);
-  changeToGray('#pieces li.filled');
+  changeToGray('#pieces li.filled', isWin);
   gameMode.options.rotate.classList.add('hidden');
   gameMode.options.flip.classList.add('hidden');
 
@@ -65,7 +67,6 @@ const placePieceOnBoard = (pieceNode, pCell, boardNode, bCell, board, pieceObjec
       gameMode.boardChangeHandler();
     }
     if (board.isWon()) {
-      gameMode.options.wonSound.play();
       return true;
     } else {
       gameMode.options.placeSound.play();

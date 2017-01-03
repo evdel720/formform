@@ -24,7 +24,8 @@ class MultiMode {
       this.setUpDisconnect();
       this.setUpNewGame();
       this.setUpOpponentBoard();
-      this.lostHandler();
+      this.lostListener();
+      this.wonListener();
     });
   }
 
@@ -101,14 +102,19 @@ class MultiMode {
   }
 
   mainBtnHandler() {
-    if (this.ready) {
-      socket.emit('cancelReady');
-      this.options.main.classList.remove("ready");
+    if (this.game && this.game.isPlaying) {
+      this.scoreHelper(false);
+      socket.emit('lost');
     } else {
-      socket.emit('ready');
-      this.options.main.classList.add("ready");
+      if (this.ready) {
+        socket.emit('cancelReady');
+        this.options.main.classList.remove("ready");
+      } else {
+        socket.emit('ready');
+        this.options.main.classList.add("ready");
+      }
+      this.ready = !this.ready;
     }
-    this.ready = !this.ready;
   }
 
   boardChangeHandler() {
@@ -118,17 +124,26 @@ class MultiMode {
   resetUIShow() {
   }
 
-  lostHandler() {
+  scoreHelper(isWon) {
+    this.ready = false;
+    disableInteraction(this.game, isWon, this, 'Ready');
+  }
+
+  lostListener() {
     socket.on('lost', () => {
-      this.ready = false;
-      disableInteraction(this.game, false, this, 'Ready');
+      this.scoreHelper(false);
+    });
+  }
+
+  wonListener() {
+    socket.on('won', () => {
+      this.scoreHelper(true);
     });
   }
 
   wonHandler() {
+    this.scoreHelper(true);
     socket.emit('won');
-    this.ready = false;
-    disableInteraction(this.game, true, this, 'Ready');
   }
 }
 
