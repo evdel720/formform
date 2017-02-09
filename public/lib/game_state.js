@@ -1,4 +1,3 @@
-/* global Map */
 const lengthOfColors = 11;
 const lengthOfGamePieces = 8;
 const amountOfPieces = 12;
