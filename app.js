@@ -26,12 +26,10 @@ io.on('connection', (socket) => {
     if (gameState === undefined) {
       socket.emit('failure', "Can't find the room. Please check the room ID.");
     } else {
-      let joinSuccess = gameState.addSocket(socket);
-      if (joinSuccess === 2) {
+      if (gameState.sockets.size < 2) {
+        gameState.addSocket(socket);
         socket.emit('setLink', roomId);
         io.to(roomId).emit('matchSuccess');
-      } else if (joinSuccess < 2) {
-        socket.emit('setLink', roomId);
       } else {
         socket.emit('failure', "The room is currently full.");
       }

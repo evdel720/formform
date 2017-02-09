@@ -15,16 +15,13 @@ class GameState {
   }
 
   addSocket(socket) {
-    if (this.sockets.size < 2) {
-      this.sockets.set(socket.id, socket);
-      socket.join(this.roomId);
-      this.setUpDisconnect(socket);
-      this.setUpReady(socket);
-      this.setUpBoardChange(socket);
-      this.setUpWin(socket);
-      this.setUpLose(socket);
-    }
-    return this.sockets.size;
+    this.sockets.set(socket.id, socket);
+    socket.join(this.roomId);
+    this.setUpDisconnect(socket);
+    this.setUpReady(socket);
+    this.setUpBoardChange(socket);
+    this.setUpWin(socket);
+    this.setUpLose(socket);
   }
 
   setUpLose(socket) {
