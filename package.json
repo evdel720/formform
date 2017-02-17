@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evdel720/formform.git"
+    "url": "git+https://github.com/jangmi-jo/formform.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/evdel720/formform/issues"
+    "url": "https://github.com/jangmi-jo/formform/issues"
   },
-  "homepage": "https://github.com/evdel720/formform#readme",
+  "homepage": "https://github.com/jangmi-jo/formform#readme",
   "dependencies": {
     "babel-core": "^6.13.2",
     "babel-loader": "^6.2.4",
